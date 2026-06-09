@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Career-Tantra</title>
+    <link rel="icon" href="favicon.png">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="dashboard.html" class="logo">
+                    <img src="logo_career_tantra.png" alt="Career-Tantra Logo">
+                    <span>Career-Tantra</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#" id="toggle-roadmap-btn">My Roadmap</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li id="user-nav-item">
+                        <span id="user-name-nav"></span>
+                    </li>
+                    <li><a href="#" id="logout-btn" class="btn-secondary">Logout</a></li>
+                </ul>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="dashboard-hero">
+        <div class="container">
+            <div class="dashboard-hero-content">
+                <h1>Welcome back, <span id="user-name-hero"></span>!</h1>
+                <p>Let's continue your journey to becoming an employable professional.</p>
+                <div class="dashboard-quick-actions">
+                    <a href="#" id="quick-toggle-roadmap" class="btn-primary">View Roadmap</a>
+                    <a href="#skills" class="btn-outline">Track Skills</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="dashboard-features">
+        <div class="container">
+            <h2 class="section-title">Your Career Tools</h2>
+            <p class="section-subtitle">Everything you need to succeed</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-top">
+                        <div class="feature-icon">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <h3>Personalized Roadmap</h3>
+                        <p>Custom step-by-step guide based on your degree and interests</p>
+                    </div>
+                    <button class="btn-track">Start Learning</button>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-top">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3>AI Mentor</h3>
+                        <p>Get guidance in Nepali and English whenever you need it</p>
+                    </div>
+                    <button class="btn-track" id="open-chat-btn">Chat Now</button>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-top">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Skill Tracker</h3>
+                        <p>Monitor your progress and visualize skill development</p>
+                    </div>
+                    <button class="btn-track">View Skills</button>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-top">
+                        <div class="feature-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3>Internship Finder</h3>
+                        <p>Discover opportunities matched to your profile</p>
+                    </div>
+                    <button class="btn-track">Explore Jobs</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Mentor Chat Modal -->
+    <div id="chat-modal" class="chat-modal">
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="chat-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <h3>AI Mentor</h3>
+                        <span class="chat-status">Online</span>
+                    </div>
+                </div>
+                <button id="close-chat-btn" class="close-chat-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="chat-messages" class="chat-messages">
+                <div class="chat-message ai-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>Hello! I'm your AI Mentor. How can I help you with your career journey today?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Type your message..." class="chat-input">
+                <button id="send-message-btn" class="send-message-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <section id="roadmap" class="dashboard-roadmap" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">Your Learning Roadmap</h2>
+            <div class="roadmap-container">
+                <div class="roadmap-step completed">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Complete Profile Setup</h3>
+                        <p>You've set up your profile with your degree and interests</p>
+                    </div>
+                </div>
+                <div class="roadmap-step active">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Start Learning Basics</h3>
+                        <p>Begin with fundamental concepts in your field</p>
+                    </div>
+                </div>
+                <div class="roadmap-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Build Projects</h3>
+                        <p>Create real-world projects to showcase your skills</p>
+                    </div>
+                </div>
+                <div class="roadmap-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Apply for Internships</h3>
+                        <p>Start applying for opportunities to gain experience</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Personalized User Profile & Skills Section -->
+    <section id="skills" class="dashboard-skills">
+        <div class="container">
+            <h2 class="section-title">Your Profile & Skills</h2>
+            <p class="section-subtitle">Track your progress and visualize your growth</p>
+            
+            <div class="skills-grid">
+                <!-- User Info Cards -->
+                <div class="skills-info-card">
+                    <h3>Your Details</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <i class="fas fa-user"></i>
+                            <div class="info-content">
+                                <span class="info-label">Name</span>
+                                <span class="info-value" id="profile-name">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div class="info-content">
+                                <span class="info-label">Email</span>
+                                <span class="info-value" id="profile-email">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <div class="info-content">
+                                <span class="info-label">Degree</span>
+                                <span class="info-value" id="profile-degree">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-book"></i>
+                            <div class="info-content">
+                                <span class="info-label">Semester</span>
+                                <span class="info-value" id="profile-semester">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-lightbulb"></i>
+                            <div class="info-content">
+                                <span class="info-label">Experience</span>
+                                <span class="info-value" id="profile-experience">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <div class="info-content">
+                                <span class="info-label">Time Available</span>
+                                <span class="info-value" id="profile-time">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Radar Chart -->
+                <div class="skills-chart-card">
+                    <h3>Skill Levels</h3>
+                    <canvas id="skillsRadarChart"></canvas>
+                </div>
+
+                <!-- Skill Bar Chart -->
+                <div class="skills-chart-card">
+                    <h3>Skill Progress</h3>
+                    <canvas id="skillsBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .dashboard-skills { padding: 4rem 0; }
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .skills-info-card, .skills-chart-card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .skills-info-card h3, .skills-chart-card h3 { margin-top: 0; color: var(--text-dark); }
+        .info-grid { display: grid; gap: 1rem; margin-top: 1.5rem; }
+        .info-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 12px; }
+        .info-item i { font-size: 1.5rem; color: var(--primary-color); }
+        .info-content { display: flex; flex-direction: column; }
+        .info-label { font-size: 0.85rem; color: var(--text-light); }
+        .info-value { font-weight: 600; color: var(--text-dark); }
+        .skills-chart-card canvas { max-height: 300px; }
+        @media (max-width: 768px) {
+            .skills-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <a href="dashboard.html" class="logo">
+                        <img src="logo_career_tantra.png" alt="Career-Tantra Logo">
+                        <span>Career-Tantra</span>
+                    </a>
+                    <p>Empowering Nepali students to build successful careers.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">Roadmap</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Career-Tantra. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Chatbot Icon -->
+    <button id="floating-chat-btn" class="floating-chat-btn">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

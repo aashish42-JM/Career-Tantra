@@ -1,0 +1,187 @@
+# Career-Tantra Project Progress
+
+## Landing Page (index.html)
+- ✅ Created hero section with "From Confused Student to Employable Professional"
+- ✅ Added dashboard preview with skill graph, roadmap, and AI chat
+- ✅ Added "How it Works" section
+- ✅ Added "Career Tracks" section with 4 tracks
+- ✅ Added "Success Stories" section
+- ✅ Added "Universities Supported" section
+- ✅ Added FAQ section with collapsible answers
+- ✅ Added call-to-action section
+- ✅ Updated navbar with login and get started buttons
+- ✅ Made responsive for mobile and desktop
+
+## Login/Signup Page (login.html)
+- ✅ Two side-by-side card layout with smooth swap animation
+- ✅ Login mode: Left card = Welcome Back, Right card = Login Form
+- ✅ Signup mode: Left card = Signup Form, Right card = Join Career-Tantra Benefits
+- ✅ Both cards have Career-Tantra primary gradient background
+- ✅ Very slow, smooth fade-in/fade-out transitions with cubic-bezier easing (2 seconds)
+- ✅ Proper padding, spacing, and rounded corners
+- ✅ Auto-scroll to top when switching between forms (smooth)
+- ✅ Card swap animation using smooth CSS transform translateX (slides left card right and right card left over 2 seconds)
+- ✅ Updated signup form with degree, semester, and interests fields
+- ✅ Integrated login/signup forms with backend API
+- ✅ Login with either email or username
+- ✅ Default admin user: username=admin, password=admin
+
+## Backend (Node.js + Express + MongoDB)
+- ✅ Created project structure: routes, controllers, models, middleware, config, utils
+- ✅ User authentication with JWT
+- ✅ User model with name, email, password (hashed with bcrypt), degree, semester, interests, username (unique, optional)
+- ✅ Admin model and admin routes
+- ✅ Signup and login endpoints
+- ✅ User profile endpoints
+- ✅ Admin dashboard endpoints
+- ✅ Password hashing with bcrypt
+- ✅ Helmet security middleware
+- ✅ Express rate limiting
+- ✅ CORS enabled
+- ✅ Profile picture upload with multer
+- ✅ Admin seed script
+- ✅ Error handling middleware
+- ✅ Default admin user (username: admin, password: admin) created automatically on server startup if not exists
+- ✅ Changed password minlength from 6 to 3 to allow default "admin" password
+
+## Scripts
+- ✅ script.js for landing page interactivity
+- ✅ auth.js for login/signup functionality with backend integration
+- ✅ Added password toggle visibility
+- ✅ Added form submission handlers
+- ✅ Added synchronized card swap and content switching
+- ✅ Added 500ms delay for smoother transition sequence
+- ✅ Added auto-scroll to top on form switch with smooth behavior
+- ✅ Added card swap class toggling (authContainer.swap)
+- ✅ Updated login to accept both email and username
+
+## Styles (styles.css)
+- ✅ Modern color scheme using Career-Tantra's primary color (#6366f1)
+- ✅ Responsive flex layout for two cards with gap
+- ✅ Super smooth 2s animations using cubic-bezier(0.22, 1, 0.36, 1) easing
+- ✅ Semi-transparent inputs and button for glass effect
+- ✅ Rounded corners (30px) for cards, 50px for inputs
+- ✅ All text in white on gradient background
+- ✅ Added responsive styles for mobile and tablet
+- ✅ Absolute positioning for inactive content for clean transitions
+- ✅ Added styles for h3 headings on forms
+- ✅ Added card swap transition using CSS transform translateX with cubic-bezier easing
+
+## Backend (Node.js + Express + MongoDB)
+- ✅ Created project structure: routes, controllers, models, middleware, config, utils
+- ✅ User authentication with JWT
+- ✅ User model with name, email, password (hashed with bcrypt), degree, semester, interests
+- ✅ Admin model and admin routes
+- ✅ Signup and login endpoints
+- ✅ User profile endpoints
+- ✅ Admin dashboard endpoints
+- ✅ Password hashing with bcrypt
+- ✅ Helmet security middleware
+- ✅ Express rate limiting
+- ✅ CORS enabled
+- ✅ Profile picture upload with multer
+- ✅ Admin seed script
+- ✅ Error handling middleware
+
+## Scripts
+- ✅ script.js for landing page interactivity
+- ✅ auth.js for login/signup functionality with backend integration
+- ✅ Added password toggle visibility
+- ✅ Added form submission handlers
+- ✅ Added synchronized card swap and content switching
+- ✅ Added 500ms delay for smoother transition sequence
+- ✅ Added auto-scroll to top on form switch with smooth behavior
+- ✅ Added card swap class toggling (authContainer.swap)
+
+## Dashboard Page (dashboard.html)
+- ✅ Added dashboard hero section with user name display
+- ✅ Added "Your Career Tools" section with 4 feature cards
+- ✅ Fixed feature card alignment so buttons are always at the same level
+- ✅ Added "Your Learning Roadmap" section with steps
+- ✅ Added AI Mentor chat modal interface
+- ✅ Chat interface with messages, typing indicator, and smooth animations
+- ✅ Added floating chatbot icon at bottom right
+
+## Styles (styles.css)
+- ✅ Added complete chat modal styles
+- ✅ Added typing indicator animations
+- ✅ Responsive chat design for mobile and desktop
+- ✅ Added floating chatbot icon styles with hover and mobile responsiveness
+
+## Dashboard Script (dashboard.js)
+- ✅ Implemented chat modal open/close functionality
+- ✅ Added message sending and receiving logic
+- ✅ Integrated with backend API for AI responses
+- ✅ Added typing indicator for better UX
+- ✅ Enter key to send message
+- ✅ Auto scroll to latest message
+- ✅ Basic message formatting (newlines to <br>)
+- ✅ Connected floating chat icon to open chat modal
+- ✅ Added custom notification system (matching login theme)
+- ✅ Replaced browser alert() with custom notifications for login check and logout
+
+## Backend (Node.js + Express) - GROQ AI INTEGRATED! 🚀
+- ✅ Installed axios for API requests
+- ✅ Stored GROQ_API_KEY securely in .env
+- ✅ Created chatController.js with Groq API (llama-3.1-8b-instant)
+- ✅ FIXED: Updated from decommissioned model llama3-70b-8192 → llama-3.1-8b-instant
+- ✅ Added powerful system prompt for Career-Tantra AI Mentor
+- ✅ Chat history support (stores last 10 messages)
+- ✅ Created chatRoutes.js with /api/ai/chat endpoint
+- ✅ Updated server.js to mount chat routes at /api/ai
+- ✅ Proper error handling and fallback responses
+
+## Project Files
+- ✅ Created PROGRESS.txt to track project milestones
+
+## AI Mentor Features
+- ✅ Powered by Groq API with llama3-70b-8192 model
+- ✅ Strong system prompt that strictly limits the AI to Career-Tantra's domain
+- ✅ Always responds in English only
+- ✅ Input filtering/relevance checking before sending to Groq API (saves cost!)
+- ✅ Rejects off-topic questions (politics, entertainment, etc.)
+- ✅ Mentions Career-Tantra platform features naturally
+- ✅ Chat history maintained per user (identified by userId)
+- ✅ Contextual conversations with history of last 10 messages maintained for better context
+- ✅ Secure API key handling (never exposed in frontend)
+- ✅ Clean, scalable code with detailed comments
+- ✅ Ready for future enhancements (RAG, vector DB, personalized AI)
+
+## Admin Dashboard
+- ✅ Created admin-dashboard.html with modern, responsive design
+- ✅ Admin dashboard with stats cards (total users, last month users, recent users
+- ✅ User management table with search functionality
+- ✅ User deletion feature
+- ✅ Pagination for user list
+- ✅ Default admin account (ID: loginadmin, Password: adminlogin) created automatically
+- ✅ Admin login via login form, redirects to admin-dashboard.html
+- ✅ Admin-only routes protected by JWT
+- ✅ Admin can view all users, their details (name, email, degree, semester, interests, joined date)
+- ✅ Updated user details include skill levels, experience level, time available
+## Enhanced User Model
+- ✅ Added skillLevels (webDevelopment, programming, dataStructures, database, aiMl)
+- ✅ Added experienceLevel (Just Starting → Job Ready)
+- ✅ Added careerGoals
+- ✅ Added preferredLearning
+- ✅ Added timeAvailable
+## Enhanced Signup Form
+- ✅ Added dropdowns for all new user preferences
+- ✅ Added scrollable form
+## Personalized AI Mentor
+- ✅ Fetches user's preferences and includes them in AI prompt for personalized advice
+- ✅ Uses user info (name, degree, interests, skill levels, etc.)
+
+## Recent Fixes & Enhancements
+- ✅ Temporarily enabled password visibility in User model (select: true) for admin view
+- ✅ Added console.logs in authController.js and auth.js for debugging
+- ✅ Updated authController.js register to include all new fields in response
+- ✅ Updated admin-dashboard.html to show password in user table
+- ✅ Updated renderUsersTable in admin-dashboard.html to include password
+- ✅ Restarted backend server to apply all changes
+- ✅ Updated admin-dashboard.html to use user list + detail modal with Chart.js
+- ✅ Added Chart.js CDN to dashboard.html and admin-dashboard.html
+- ✅ Updated dashboard.html with personalized user profile & skills section
+- ✅ Updated dashboard.js to fetch full user data and render radar/bar charts
+- ✅ Admin dashboard now shows detailed user info with skill radar chart
+- ✅ Moved Learning Roadmap to toggleable button in navbar (hides by default)
+- ✅ Updated quick action "View Roadmap" to also toggle roadmap visibility

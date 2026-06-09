@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Career-Tantra</title>
+    <link rel="icon" href="favicon.png">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="auth-page">
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index.html" class="logo">
+                    <img src="logo_career_tantra.png" alt="Career-Tantra Logo">
+                    <span>Career-Tantra</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html#how">How it Works</a></li>
+                    <li><a href="index.html#tracks">Career Tracks</a></li>
+                    <li><a href="index.html">Home</a></li>
+                </ul>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="auth-section">
+        <div class="container">
+            <div class="auth-container" id="authContainer">
+                <!-- Left Card (Welcome / Signup Form) -->
+                <div class="auth-card auth-card-left">
+                    <!-- Welcome Back Content (shown when not swapped) -->
+                    <div class="auth-card-content active" id="leftWelcomeContent">
+                        <h2>Welcome Back!</h2>
+                        <p>Continue your journey to becoming an employable professional with personalized guidance from Career-Tantra.</p>
+                        <div class="auth-stats">
+                            <div class="auth-stat">
+                                <h4>50,000+</h4>
+                                <p>Active Students</p>
+                            </div>
+                            <div class="auth-stat">
+                                <h4>10,000+</h4>
+                                <p>Internships Placed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Signup Form (shown when swapped) -->
+                    <form class="auth-card-form" id="leftSignupForm">
+                        <h3>Let's personalize your journey!</h3>
+                        <div class="form-group">
+                            <input type="text" id="signupName" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="signupEmail" placeholder="Email Address" required>
+                        </div>
+                        <div class="form-group">
+                            <div class="password-input">
+                                <input type="password" id="signupPassword" placeholder="Password" required>
+                                <button type="button" class="toggle-password">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="password-input">
+                                <input type="password" id="signupConfirmPassword" placeholder="Confirm Password" required>
+                                <button type="button" class="toggle-password">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="signupDegree" placeholder="Your Degree (e.g., BSc CSIT)" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="signupSemester" placeholder="Your Semester (e.g., 4th)" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="signupInterests" placeholder="Interests (comma-separated, e.g., Web Dev, AI, ML)" required>
+                        </div>
+
+                        <!-- NEW: EXPERIENCE LEVEL -->
+                        <div class="form-group">
+                            <label>Your Current Experience Level</label>
+                            <select id="signupExperience" required>
+                                <option value="">Select your experience</option>
+                                <option value="Just Starting">Just Starting</option>
+                                <option value="Learning Basics">Learning Basics</option>
+                                <option value="Building Projects">Building Projects</option>
+                                <option value="Job Ready">Job Ready</option>
+                            </select>
+                        </div>
+
+                        <!-- NEW: SKILL LEVELS -->
+                        <div class="form-group">
+                            <label>Web Development Skill Level</label>
+                            <select id="signupWebDev" required>
+                                <option value="">Select level</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Programming Skill Level</label>
+                            <select id="signupProgramming" required>
+                                <option value="">Select level</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Data Structures & Algorithms</label>
+                            <select id="signupDSA" required>
+                                <option value="">Select level</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Database Knowledge</label>
+                            <select id="signupDatabase" required>
+                                <option value="">Select level</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>AI/ML Knowledge</label>
+                            <select id="signupAIML" required>
+                                <option value="">Select level</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+
+                        <!-- NEW: CAREER GOALS -->
+                        <div class="form-group">
+                            <label>Career Goals (select multiple, comma-separated)</label>
+                            <input type="text" id="signupCareerGoals" placeholder="e.g., Frontend Developer, Data Scientist, Freelancer">
+                        </div>
+
+                        <!-- NEW: PREFERRED LEARNING -->
+                        <div class="form-group">
+                            <label>Preferred Learning Style</label>
+                            <select id="signupLearning" required>
+                                <option value="">Select style</option>
+                                <option value="Video Tutorials">Video Tutorials</option>
+                                <option value="Reading Docs">Reading Documentation</option>
+                                <option value="Hands-on Projects">Hands-on Projects</option>
+                                <option value="Live Classes">Live Classes</option>
+                                <option value="All of the Above">All of the Above</option>
+                            </select>
+                        </div>
+
+                        <!-- NEW: TIME AVAILABLE -->
+                        <div class="form-group">
+                            <label>Time Available Per Week</label>
+                            <select id="signupTime" required>
+                                <option value="">Select time</option>
+                                <option value="Less than 5 hours/week">Less than 5 hours</option>
+                                <option value="5-10 hours/week">5-10 hours</option>
+                                <option value="10-20 hours/week">10-20 hours</option>
+                                <option value="More than 20 hours/week">More than 20 hours</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-large">Sign Up</button>
+                        <p class="switch-form">
+                            Already have an account? 
+                            <a href="#" class="switch-link" id="showLogin">Login</a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Right Card (Login Form / Join Content) -->
+                <div class="auth-card auth-card-right">
+                    <!-- Login Form (shown when not swapped) -->
+                    <form class="auth-card-form active" id="rightLoginForm">
+                        <h3>Enter your login details</h3>
+                        <div class="form-group">
+                            <input type="text" id="loginEmail" placeholder="Email or Username" required>
+                        </div>
+                        <div class="form-group">
+                            <div class="password-input">
+                                <input type="password" id="loginPassword" placeholder="Password" required>
+                                <button type="button" class="toggle-password">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                        <button type="submit" class="btn-primary btn-large">Login</button>
+                        <p class="switch-form">
+                            New to Career-Tantra? 
+                            <a href="#" class="switch-link" id="showSignUp">Sign Up</a>
+                        </p>
+                    </form>
+
+                    <!-- Join Career-Tantra Content (shown when swapped) -->
+                    <div class="auth-card-content" id="rightSignupContent">
+                        <h2>Join Career-Tantra!</h2>
+                        <p>Create your account to unlock all the amazing benefits Career-Tantra has to offer.</p>
+                        <ul class="auth-benefits">
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <h4>Personalized Roadmaps</h4>
+                                    <p>Custom learning paths just for you</p>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <h4>AI-Powered Mentorship</h4>
+                                    <p>Guidance in Nepali & English</p>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <h4>Real Internships</h4>
+                                    <p>Connect with top companies</p>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <h4>Community Support</h4>
+                                    <p>Learn with fellow students</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <a href="index.html" class="logo">
+                        <img src="logo_career_tantra.png" alt="Career-Tantra Logo">
+                        <span>Career-Tantra</span>
+                    </a>
+                    <p>Empowering Nepali students to build successful careers.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Roadmap</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Career-Tantra. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+</body>
+</html>

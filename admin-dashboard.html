@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Career-Tantra</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <!-- Chart.js for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary-color: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary-color: #10b981;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --bg-light: #f8fafc;
+      --white: #ffffff;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-light);
+      margin: 0;
+      padding: 0;
+    }
+    /* Admin Header */
+    .admin-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .admin-header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .admin-header .btn-logout {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .admin-header .btn-logout:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    /* Admin Main */
+    .admin-main {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    /* User List Sidebar */
+    .user-list-sidebar {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .user-list-sidebar h3 {
+      margin-top: 0;
+      color: var(--text-dark);
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 50px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 1rem;
+    }
+    .user-item {
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .user-item:hover, .user-item.active {
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(16,185,129,0.1));
+      border-color: var(--primary-light);
+    }
+    .user-item h4 {
+      margin: 0 0 0.25rem 0;
+      color: var(--text-dark);
+    }
+    .user-item p {
+      margin: 0;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    /* User Detail View */
+    .user-detail-view {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    .no-user-selected {
+      text-align: center;
+      color: var(--text-light);
+      padding: 4rem;
+    }
+    .user-detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+    .user-detail-header h2 {
+      margin: 0;
+      color: var(--text-dark);
+    }
+    .btn-delete {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      cursor: pointer;
+    }
+    .btn-delete:hover {
+      background: #dc2626;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .detail-card {
+      padding: 1.25rem;
+      border-radius: 12px;
+      background: var(--bg-light);
+    }
+    .detail-card h4 {
+      margin: 0 0 0.5rem 0;
+      color: var(--text-light);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+    .detail-card p {
+      margin: 0;
+      color: var(--text-dark);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .chart-container {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: var(--bg-light);
+      border-radius: 12px;
+    }
+    @media (max-width: 768px) {
+      .admin-main { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Admin Header -->
+  <header class="admin-header">
+    <h1><i class="fas fa-shield-alt"></i> Career-Tantra Admin Dashboard</h1>
+    <button class="btn-logout" id="adminLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </header>
+
+  <!-- Admin Main Content -->
+  <main class="admin-main">
+    <!-- User List Sidebar -->
+    <div class="user-list-sidebar">
+      <h3>All Users</h3>
+      <input type="text" class="search-input" id="searchUsers" placeholder="Search users by name or email..."/>
+      <div id="usersListContainer">
+        <!-- Users will be loaded here -->
+      </div>
+    </div>
+
+    <!-- User Detail View -->
+    <div class="user-detail-view" id="userDetailView">
+      <div class="no-user-selected">
+        <i class="fas fa-user-circle fa-4x" style="color: var(--text-light);"></i>
+        <p style="margin-top: 1rem;">Select a user from the list to view details</p>
+      </div>
+      <div id="userDetailsContent" style="display: none;"></div>
+    </div>
+  </main>
+
+  <script>
+    let allUsers = [];
+    let selectedUser = null;
+
+    // Check admin login status
+    document.addEventListener('DOMContentLoaded', () => {
+      const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!adminToken || user.role !== 'admin') {
+        window.location.href = 'login.html';
+        return;
+      }
+      loadUsers();
+
+      document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+      });
+
+      document.getElementById('searchUsers').addEventListener('input', (e) => filterUsers(e.target.value));
+    });
+
+    async function loadUsers() {
+      try {
+        const res = await fetch('http://localhost:5000/api/admin/users', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('adminToken') || localStorage.getItem('token')}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          allUsers = data.data; // Use data.data instead of data.users
+          renderUsersList(allUsers);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderUsersList(users) {
+      const container = document.getElementById('usersListContainer');
+      container.innerHTML = '';
+      users.forEach(user => {
+        const div = document.createElement('div');
+        div.className = `user-item${selectedUser && selectedUser._id === user._id ? ' active' : ''}`;
+        div.innerHTML = `<h4>${user.name}</h4><p>${user.email}</p>`;
+        div.addEventListener('click', () => selectUser(user));
+        container.appendChild(div);
+      });
+    }
+
+    function filterUsers(query) {
+      const filtered = allUsers.filter(u => 
+        u.name.toLowerCase().includes(query.toLowerCase()) || 
+        u.email.toLowerCase().includes(query.toLowerCase())
+      );
+      renderUsersList(filtered);
+    }
+
+    function selectUser(user) {
+      selectedUser = user;
+      renderUsersList(allUsers);
+      showUserDetails(user);
+    }
+
+    function showUserDetails(user) {
+      const container = document.getElementById('userDetailView');
+      const noUser = container.querySelector('.no-user-selected');
+      const detailsContent = document.getElementById('userDetailsContent');
+
+      noUser.style.display = 'none';
+      detailsContent.style.display = 'block';
+
+      const skills = user.skillLevels || { webDevelopment: 'Beginner', programming: 'Beginner', dataStructures: 'Beginner', database: 'Beginner', aiMl: 'Beginner' };
+      
+      detailsContent.innerHTML = `
+        <div class="user-detail-header">
+          <div>
+            <h2><i class="fas fa-user-circle"></i> ${user.name}</h2>
+            <p style="color: var(--text-light); margin: 0.25rem 0 0 0;">${user.email}</p>
+          </div>
+          <button class="btn-delete" id="deleteUserBtn" data-id="${user._id}">
+            <i class="fas fa-trash"></i> Delete User
+          </button>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-card">
+            <h4>Password</h4>
+            <p>${user.password || 'N/A'}</p>
+          </div>
+          <div class="detail-card">
+            <h4>Degree</h4>
+            <p>${user.degree}</p>
+          </div>
+          <div class="detail-card">
+            <h4>Semester</h4>
+            <p>${user.semester}</p>
+          </div>
+          <div class="detail-card">
+            <h4>Experience Level</h4>
+            <p>${user.experienceLevel || 'N/A'}</p>
+          </div>
+          <div class="detail-card">
+            <h4>Preferred Learning</h4>
+            <p>${user.preferredLearning || 'N/A'}</p>
+          </div>
+          <div class="detail-card">
+            <h4>Time Available</h4>
+            <p>${user.timeAvailable || 'N/A'}</p>
+          </div>
+          <div class="detail-card" style="grid-column: span 2;">
+            <h4>Interests</h4>
+            <p>${user.interests ? user.interests.join(', ') : 'N/A'}</p>
+          </div>
+          <div class="detail-card" style="grid-column: span 2;">
+            <h4>Career Goals</h4>
+            <p>${user.careerGoals && user.careerGoals.length > 0 ? user.careerGoals.join(', ') : 'N/A'}</p>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <h3 style="margin-top: 0; color: var(--text-dark);">Skill Levels</h3>
+          <canvas id="skillsChart"></canvas>
+        </div>
+      `;
+
+      document.getElementById('deleteUserBtn').addEventListener('click', () => deleteUser(user._id));
+      renderSkillsChart(skills);
+    }
+
+    function renderSkillsChart(skills) {
+      const canvas = document.getElementById('skillsChart');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const skillNames = ['Web Development', 'Programming', 'Data Structures', 'Database', 'AI/ML'];
+      const skillValues = [
+        getSkillValue(skills.webDevelopment),
+        getSkillValue(skills.programming),
+        getSkillValue(skills.dataStructures),
+        getSkillValue(skills.database),
+        getSkillValue(skills.aiMl)
+      ];
+
+      new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: skillNames,
+          datasets: [{
+            label: 'Skill Levels',
+            data: skillValues,
+            backgroundColor: 'rgba(99, 102, 241, 0.2)',
+            borderColor: 'rgba(99, 102, 241, 1)',
+            pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          scales: { r: { beginAtZero: true, max: 4 } },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    function getSkillValue(level) {
+      const map = { 'Beginner': 1, 'Intermediate': 2, 'Advanced': 3, 'Expert':4 };
+      return map[level] || 1;
+    }
+
+    async function deleteUser(userId) {
+      if (!confirm('Are you sure you want to delete this user?')) return;
+      try {
+        const res = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('adminToken') || localStorage.getItem('token')}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          allUsers = allUsers.filter(u => u._id !== userId);
+          selectedUser = null;
+          document.getElementById('userDetailView').querySelector('.no-user-selected').style.display = 'block';
+          document.getElementById('userDetailsContent').style.display = 'none';
+          renderUsersList(allUsers);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
