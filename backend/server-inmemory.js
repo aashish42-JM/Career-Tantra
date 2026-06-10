@@ -23,6 +23,8 @@ if (!fs.existsSync(DATA_DIR)) {
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const ADMINS_FILE = path.join(DATA_DIR, 'admins.json');
 const CHAT_HISTORY_FILE = path.join(DATA_DIR, 'chat-history.json');
+const ROADMAPS_FILE = path.join(DATA_DIR, 'roadmaps.json');
+const USER_PROGRESS_FILE = path.join(DATA_DIR, 'userProgress.json');
 
 // Helper functions to read/write JSON files
 function readJSONFile(filePath, defaultData) {
@@ -54,6 +56,8 @@ app.use(express.json());
 let users = readJSONFile(USERS_FILE, []);
 let admins = readJSONFile(ADMINS_FILE, []);
 let userChatHistory = readJSONFile(CHAT_HISTORY_FILE, {});
+let roadmaps = readJSONFile(ROADMAPS_FILE, []);
+let userProgress = readJSONFile(USER_PROGRESS_FILE, []);
 
 // Create default admin if not exists
 const createDefaultAdmin = async () => {
@@ -109,6 +113,107 @@ const createDefaultUser = async () => {
     console.log('✅ Default user created!');
     console.log('Username: admin');
     console.log('Password: admin');
+  }
+};
+
+// Create default roadmaps if not exists
+const createDefaultRoadmaps = () => {
+  if (roadmaps.length === 0) {
+    const defaultRoadmaps = [
+      {
+        _id: 'roadmap-1',
+        title: 'Full Stack Web Development',
+        category: 'Full Stack Development',
+        difficulty: 'Beginner',
+        estimatedDuration: '3 months',
+        tags: ['web', 'javascript', 'react', 'nodejs'],
+        steps: [
+          {
+            _id: 'step-1-1',
+            title: 'Learn HTML & CSS Fundamentals',
+            description: 'Master the building blocks of the web.',
+            unlockOrder: 1,
+            xpPoints: 50,
+            resources: [
+              { title: 'MDN Web Docs', url: 'https://developer.mozilla.org/en-US/docs/Learn/HTML', type: 'documentation' },
+              { title: 'FreeCodeCamp', url: 'https://www.freecodecamp.org/learn/2022/responsive-web-design/', type: 'course' },
+            ],
+            projects: [
+              { title: 'Personal Portfolio', description: 'Build a simple portfolio website using HTML and CSS', difficulty: 'Beginner' },
+            ],
+          },
+          {
+            _id: 'step-1-2',
+            title: 'JavaScript Essentials',
+            description: 'Learn the basics of JavaScript programming.',
+            unlockOrder: 2,
+            xpPoints: 100,
+            resources: [
+              { title: 'JavaScript.info', url: 'https://javascript.info/', type: 'article' },
+              { title: 'You Don\'t Know JS', url: 'https://github.com/getify/You-Dont-Know-JS', type: 'documentation' },
+            ],
+            projects: [
+              { title: 'Todo List App', description: 'Build a simple todo app using vanilla JS', difficulty: 'Beginner' },
+            ],
+          },
+          {
+            _id: 'step-1-3',
+            title: 'DOM Manipulation',
+            description: 'Learn how to interact with the DOM using JavaScript.',
+            unlockOrder: 3,
+            xpPoints: 75,
+            resources: [
+              { title: 'MDN DOM', url: 'https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model', type: 'documentation' },
+            ],
+            projects: [
+              { title: 'Interactive Quiz', description: 'Build a quiz with DOM manipulation', difficulty: 'Intermediate' },
+            ],
+          },
+        ],
+        createdAt: new Date(),
+      },
+      {
+        _id: 'roadmap-2',
+        title: 'AI & Machine Learning Fundamentals',
+        category: 'AI/ML',
+        difficulty: 'Beginner',
+        estimatedDuration: '4 months',
+        tags: ['ai', 'ml', 'python', 'tensorflow'],
+        steps: [
+          {
+            _id: 'step-2-1',
+            title: 'Python for Beginners',
+            description: 'Learn Python programming language basics.',
+            unlockOrder: 1,
+            xpPoints: 60,
+            resources: [
+              { title: 'Python.org', url: 'https://www.python.org/about/gettingstarted/', type: 'documentation' },
+              { title: 'Codecademy', url: 'https://www.codecademy.com/learn/learn-python-3', type: 'course' },
+            ],
+            projects: [
+              { title: 'Number Guessing Game', description: 'Create a simple number guessing game', difficulty: 'Beginner' },
+            ],
+          },
+          {
+            _id: 'step-2-2',
+            title: 'Introduction to Machine Learning',
+            description: 'Learn ML basics, algorithms, and tools.',
+            unlockOrder: 2,
+            xpPoints: 120,
+            resources: [
+              { title: 'Coursera ML Course', url: 'https://www.coursera.org/learn/machine-learning', type: 'course' },
+            ],
+            projects: [
+              { title: 'Iris Classification', description: 'Classify iris flowers using scikit-learn', difficulty: 'Intermediate' },
+            ],
+          },
+        ],
+        createdAt: new Date(),
+      },
+    ];
+    roadmaps = defaultRoadmaps;
+    writeJSONFile(ROADMAPS_FILE, roadmaps);
+    console.log('✅ Default roadmaps created!');
   }
 };
 
@@ -499,10 +604,186 @@ Use this information to give personalized, tailored advice!`;
   }
 });
 
+// -------------------
+// ROADMAP ROUTES
+// -------------------
+
+// Get all roadmaps
+app.get('/api/roadmaps', (req, res) => {
+  res.status(200).json({ success: true, data: roadmaps });
+});
+
+// Get single roadmap
+app.get('/api/roadmaps/:id', (req, res) => {
+  const roadmap = roadmaps.find(r => r._id === req.params.id);
+  if (!roadmap) {
+    return res.status(404).json({ success: false, message: 'Roadmap not found' });
+  }
+  res.status(200).json({ success: true, data: roadmap });
+});
+
+// Enroll user in a roadmap
+app.post('/api/roadmaps/:id/enroll', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = users.find(u => u._id === decoded.id);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const roadmap = roadmaps.find(r => r._id === req.params.id);
+    if (!roadmap) {
+      return res.status(404).json({ success: false, message: 'Roadmap not found' });
+    }
+
+    const existingProgress = userProgress.find(p => p.user === user._id && p.roadmap === req.params.id);
+    if (existingProgress) {
+      return res.status(400).json({ success: false, message: 'Already enrolled in this roadmap' });
+    }
+
+    const newProgress = {
+      _id: `progress-${Date.now()}`,
+      user: user._id,
+      roadmap: req.params.id,
+      roadmapData: roadmap, // Store roadmap data for easy access
+      completedSteps: [],
+      currentStep: 1,
+      xpEarned: 0,
+      streak: 1,
+      lastActive: new Date(),
+      badges: [],
+      createdAt: new Date(),
+    };
+    userProgress.push(newProgress);
+    writeJSONFile(USER_PROGRESS_FILE, userProgress);
+    res.status(201).json({ success: true, data: newProgress });
+  } catch (error) {
+    res.status(401).json({ success: false, message: 'Not authorized' });
+  }
+});
+
+// Get user's enrolled roadmaps/progress
+app.get('/api/roadmaps/progress', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = users.find(u => u._id === decoded.id);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+
+    const userEnrolled = userProgress.filter(p => p.user === user._id);
+    res.status(200).json({ success: true, data: userEnrolled });
+  } catch (error) {
+    res.status(401).json({ success: false, message: 'Not authorized' });
+  }
+});
+
+// Mark step complete
+app.put('/api/roadmaps/progress/:progressId/complete', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = users.find(u => u._id === decoded.id);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const progressIndex = userProgress.findIndex(p => p._id === req.params.progressId);
+    if (progressIndex === -1) {
+      return res.status(404).json({ success: false, message: 'Progress not found' });
+    }
+    const progress = userProgress[progressIndex];
+    if (progress.user !== user._id) {
+      return res.status(403).json({ success: false, message: 'Not your progress' });
+    }
+
+    const { stepId } = req.body;
+    const roadmap = progress.roadmapData;
+    const step = roadmap.steps.find(s => s._id === stepId);
+    if (!step) {
+      return res.status(404).json({ success: false, message: 'Step not found' });
+    }
+
+    if (progress.completedSteps.some(s => s.stepId === stepId)) {
+      return res.status(400).json({ success: false, message: 'Step already completed' });
+    }
+
+    // Add completed step
+    progress.completedSteps.push({
+      stepId,
+      completedAt: new Date(),
+    });
+
+    // Add XP
+    progress.xpEarned += step.xpPoints;
+
+    // Update current step
+    const nextStepOrder = step.unlockOrder + 1;
+    const nextStepExists = roadmap.steps.some(s => s.unlockOrder === nextStepOrder);
+    if (nextStepExists) {
+      progress.currentStep = nextStepOrder;
+    }
+
+    // Update streak
+    const today = new Date();
+    const lastActive = new Date(progress.lastActive);
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    if (lastActive.toDateString() === yesterday.toDateString()) {
+      progress.streak += 1;
+    } else if (lastActive.toDateString() !== today.toDateString()) {
+      progress.streak = 1;
+    }
+    progress.lastActive = today;
+
+    // Check for badges
+    const completionPercent = Math.round((progress.completedSteps.length / roadmap.steps.length) * 100);
+    if (completionPercent >= 25 && !progress.badges.some(b => b.name === 'First Steps')) {
+      progress.badges.push({ name: 'First Steps', description: 'Complete 25% of a roadmap', icon: '🎯', earnedAt: new Date() });
+    }
+    if (completionPercent >= 50 && !progress.badges.some(b => b.name === 'Halfway There')) {
+      progress.badges.push({ name: 'Halfway There', description: 'Complete 50% of a roadmap', icon: '⭐', earnedAt: new Date() });
+    }
+    if (completionPercent >= 100 && !progress.badges.some(b => b.name === 'Roadmap Master')) {
+      progress.badges.push({ name: 'Roadmap Master', description: 'Complete 100% of a roadmap', icon: '🏆', earnedAt: new Date() });
+    }
+    if (progress.streak >= 7 && !progress.badges.some(b => b.name === '7-Day Streak')) {
+      progress.badges.push({ name: '7-Day Streak', description: 'Learn 7 days in a row', icon: '🔥', earnedAt: new Date() });
+    }
+
+    userProgress[progressIndex] = progress;
+    writeJSONFile(USER_PROGRESS_FILE, userProgress);
+    res.status(200).json({ success: true, data: progress });
+  } catch (error) {
+    console.error('Error completing step:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // Start server
 const startServer = async () => {
   await createDefaultAdmin();
   await createDefaultUser();
+  createDefaultRoadmaps();
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`💾 Data stored in: ${DATA_DIR}`);

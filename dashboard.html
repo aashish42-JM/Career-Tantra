@@ -133,39 +133,52 @@
         </div>
     </div>
 
-    <section id="roadmap" class="dashboard-roadmap" style="display: none;">
+    <!-- XP & Badges Dashboard -->
+    <section id="xp-section" class="xp-badges-section">
         <div class="container">
-            <h2 class="section-title">Your Learning Roadmap</h2>
-            <div class="roadmap-container">
-                <div class="roadmap-step completed">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h3>Complete Profile Setup</h3>
-                        <p>You've set up your profile with your degree and interests</p>
+            <div class="xp-badges-grid">
+                <div class="xp-card">
+                    <div class="xp-header">
+                        <i class="fas fa-star"></i>
+                        <h3>Total XP</h3>
                     </div>
+                    <div class="xp-value" id="total-xp">0</div>
                 </div>
-                <div class="roadmap-step active">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h3>Start Learning Basics</h3>
-                        <p>Begin with fundamental concepts in your field</p>
+                <div class="streak-card">
+                    <div class="streak-header">
+                        <i class="fas fa-fire"></i>
+                        <h3>Current Streak</h3>
                     </div>
+                    <div class="streak-value" id="current-streak">0 days</div>
                 </div>
-                <div class="roadmap-step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h3>Build Projects</h3>
-                        <p>Create real-world projects to showcase your skills</p>
-                    </div>
-                </div>
-                <div class="roadmap-step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h3>Apply for Internships</h3>
-                        <p>Start applying for opportunities to gain experience</p>
+                <div class="badges-card">
+                    <h3>Your Badges</h3>
+                    <div id="badges-container" class="badges-container">
+                        <div class="badge-placeholder">
+                            <i class="fas fa-award"></i>
+                            <span>Complete steps to earn badges!</span>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Available Roadmaps -->
+    <section id="roadmaps" class="available-roadmaps">
+        <div class="container">
+            <h2 class="section-title">Available Roadmaps</h2>
+            <p class="section-subtitle">Choose a roadmap to start your learning journey</p>
+            <div id="roadmaps-grid" class="roadmaps-grid"></div>
+        </div>
+    </section>
+
+    <!-- Enrolled Roadmaps (Visible only if user is enrolled) -->
+    <section id="enrolled-roadmaps" class="enrolled-roadmaps">
+        <div class="container">
+            <h2 class="section-title">Your Enrolled Roadmaps</h2>
+            <p class="section-subtitle">Continue your progress</p>
+            <div id="enrolled-roadmaps-grid" class="enrolled-roadmaps-grid"></div>
         </div>
     </section>
 
@@ -241,6 +254,52 @@
     </section>
 
     <style>
+        /* XP & Badges Section */
+        .xp-badges-section { padding: 3rem 0; }
+        .xp-badges-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .xp-card, .streak-card, .badges-card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .xp-header, .streak-header { display: flex; align-items: center; gap: 0.75rem; color: var(--primary-color); }
+        .xp-header i, .streak-header i { font-size: 1.75rem; }
+        .xp-header h3, .streak-header h3 { margin: 0; font-size: 1.25rem; color: var(--text-dark); }
+        .xp-value, .streak-value { font-size: 3rem; font-weight: 800; color: var(--primary-color); margin-top: 1rem; }
+        .badges-container { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+        .badge-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; background: var(--bg-light); border-radius: 12px; }
+        .badge-item i { font-size: 2rem; color: #f59e0b; }
+        .badge-item span { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); text-align: center; }
+        .badge-placeholder { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: var(--text-light); }
+        .badge-placeholder i { font-size: 2rem; opacity: 0.3; }
+
+        /* Roadmaps Section */
+        .available-roadmaps, .enrolled-roadmaps { padding: 4rem 0; }
+        .roadmaps-grid, .enrolled-roadmaps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .roadmap-card, .enrolled-roadmap-card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease; }
+        .roadmap-card:hover, .enrolled-roadmap-card:hover { transform: translateY(-5px); }
+        .roadmap-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .roadmap-category { padding: 0.25rem 0.75rem; background: var(--primary-light); color: var(--primary-color); border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .roadmap-difficulty { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .roadmap-difficulty.beginner { background: #d1fae5; color: #059669; }
+        .roadmap-difficulty.intermediate { background: #fef3c7; color: #d97706; }
+        .roadmap-difficulty.advanced { background: #fee2e2; color: #dc2626; }
+        .roadmap-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin: 0 0 0.5rem 0; }
+        .roadmap-desc { color: var(--text-light); margin-bottom: 1.5rem; }
+        .roadmap-stats { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .roadmap-stat { display: flex; align-items: center; gap: 0.5rem; color: var(--text-light); font-size: 0.9rem; }
+        .roadmap-stat i { color: var(--primary-color); }
+        .enroll-btn { width: 100%; padding: 0.75rem; background: var(--primary-color); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: background 0.3s ease; }
+        .enroll-btn:hover { background: #5a5df3; }
+        .enroll-btn:disabled { background: #a5a5f3; cursor: not-allowed; }
+        .progress-bar { width: 100%; height: 8px; background: var(--bg-light); border-radius: 4px; margin: 1rem 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary-color); border-radius: 4px; transition: width 0.5s ease; }
+        .roadmap-steps { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+        .roadmap-step { display: flex; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 12px; align-items: center; }
+        .step-checkbox { width: 30px; height: 30px; border: 2px solid var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; flex-shrink: 0; }
+        .step-checkbox.completed { background: var(--primary-color); color: white; }
+        .step-checkbox.locked { border-color: var(--text-light); cursor: not-allowed; opacity: 0.5; }
+        .step-content { flex: 1; }
+        .step-title { font-weight: 600; color: var(--text-dark); margin: 0; }
+        .step-desc { font-size: 0.9rem; color: var(--text-light); margin: 0.25rem 0 0 0; }
+        .step-xp { font-size: 0.85rem; font-weight: 600; color: var(--primary-color); }
+
         .dashboard-skills { padding: 4rem 0; }
         .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-top: 2rem; }
         .skills-info-card, .skills-chart-card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
@@ -254,6 +313,7 @@
         .skills-chart-card canvas { max-height: 300px; }
         @media (max-width: 768px) {
             .skills-grid { grid-template-columns: 1fr; }
+            .xp-badges-grid { grid-template-columns: 1fr; }
         }
     </style>
 

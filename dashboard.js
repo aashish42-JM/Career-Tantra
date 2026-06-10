@@ -1,6 +1,6 @@
+
 // Notification helper function
 function showNotification(type, title, message) {
-    // Create container if it doesn't exist
     let container = document.querySelector('.notification-container');
     if (!container) {
         container = document.createElement('div');
@@ -8,7 +8,6 @@ function showNotification(type, title, message) {
         document.body.appendChild(container);
     }
 
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     
@@ -24,7 +23,6 @@ function showNotification(type, title, message) {
     
     container.appendChild(notification);
     
-    // Remove notification after 5 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOutRight 0.4s ease-out forwards';
         setTimeout(() => {
@@ -38,14 +36,14 @@ function showNotification(type, title, message) {
 let currentUser = null;
 let radarChart = null;
 let barChart = null;
+let roadmaps = [];
+let enrolledProgress = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if user is logged in
     const user = JSON.parse(localStorage.getItem('user'));
     const token = localStorage.getItem('token');
     
     if (!user || !token) {
-        // Redirect to login if not logged in
         showNotification('error', 'Not Logged In', 'Please log in first!');
         setTimeout(() => {
             window.location.href = 'login.html';
@@ -53,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Update UI with user data
     const userNameNav = document.getElementById('user-name-nav');
     const userNameHero = document.getElementById('user-name-hero');
     
@@ -65,58 +62,23 @@ document.addEventListener('DOMContentLoaded', function() {
         userNameHero.textContent = user.name;
     }
     
-    // Fetch full user data
     fetchUserData(token);
+    fetchAllRoadmaps(token);
+    fetchUserProgress(token);
     
-    // Roadmap toggle functionality
-    const roadmapSection = document.getElementById('roadmap');
-    const toggleRoadmapBtn = document.getElementById('toggle-roadmap-btn');
-    const quickToggleRoadmap = document.getElementById('quick-toggle-roadmap');
-    
-    // Toggle roadmap visibility
-    function toggleRoadmap() {
-        if (roadmapSection) {
-            const isVisible = roadmapSection.style.display !== 'none';
-            roadmapSection.style.display = isVisible ? 'none' : 'block';
-            // Optional: scroll to roadmap when shown
-            if (!isVisible) {
-                roadmapSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-    }
-    
-    if (toggleRoadmapBtn) {
-        toggleRoadmapBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            toggleRoadmap();
-        });
-    }
-    
-    if (quickToggleRoadmap) {
-        quickToggleRoadmap.addEventListener('click', function(e) {
-            e.preventDefault();
-            toggleRoadmap();
-        });
-    }
-    
-    // Logout functionality
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Clear localStorage
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            // Show success message
             showNotification('success', 'Logged Out', 'You have been logged out successfully!');
-            // Redirect to login
             setTimeout(() => {
                 window.location.href = 'login.html';
             }, 1500);
         });
     }
     
-    // AI Mentor Chat Functionality
     const openChatBtn = document.getElementById('open-chat-btn');
     const floatingChatBtn = document.getElementById('floating-chat-btn');
     const closeChatBtn = document.getElementById('close-chat-btn');
@@ -124,11 +86,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.getElementById('chat-input');
     const sendMessageBtn = document.getElementById('send-message-btn');
     const chatMessages = document.getElementById('chat-messages');
-    
-    // User ID for chat history
     const userId = user?._id || user?.id || 'guest';
     
-    // Open chat modal (from feature card)
     if (openChatBtn) {
         openChatBtn.addEventListener('click', function() {
             chatModal.classList.add('active');
@@ -136,7 +95,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Open chat modal (from floating button)
     if (floatingChatBtn) {
         floatingChatBtn.addEventListener('click', function() {
             chatModal.classList.add('active');
@@ -144,14 +102,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Close chat modal
     if (closeChatBtn) {
         closeChatBtn.addEventListener('click', function() {
             chatModal.classList.remove('active');
         });
     }
     
-    // Close chat when clicking outside
     if (chatModal) {
         chatModal.addEventListener('click', function(e) {
             if (e.target === chatModal) {
@@ -160,13 +116,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Add message to chat - supports basic formatting
     function addMessage(content, isUser) {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('chat-message');
         messageDiv.classList.add(isUser ? 'user-message' : 'ai-message');
         
-        // Convert newlines to <br> for better formatting
         const formattedContent = content
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -186,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
     
-    // Show typing indicator
     function showTypingIndicator() {
         const typingDiv = document.createElement('div');
         typingDiv.classList.add('chat-message', 'ai-message');
@@ -205,7 +158,6 @@ document.addEventListener('DOMContentLoaded', function() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
     
-    // Remove typing indicator
     function removeTypingIndicator() {
         const typingDiv = document.getElementById('typing-indicator');
         if (typingDiv) {
@@ -213,20 +165,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Send message function
     async function sendMessage() {
         const message = chatInput.value.trim();
         if (!message) return;
         
-        // Add user message
         addMessage(message, true);
         chatInput.value = '';
-        
-        // Show typing indicator
         showTypingIndicator();
         
         try {
-            // Send message to backend
             const response = await fetch('http://localhost:5000/api/ai/chat', {
                 method: 'POST',
                 headers: {
@@ -239,11 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             const data = await response.json();
-            
-            // Remove typing indicator
             removeTypingIndicator();
-            
-            // Add AI response
             addMessage(data.response, false);
         } catch (error) {
             removeTypingIndicator();
@@ -252,12 +195,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Send message on button click
     if (sendMessageBtn) {
         sendMessageBtn.addEventListener('click', sendMessage);
     }
     
-    // Send message on Enter key
     if (chatInput) {
         chatInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -267,7 +208,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Fetch full user data from backend
 async function fetchUserData(token) {
     try {
         const res = await fetch('http://localhost:5000/api/auth/me', {
@@ -286,11 +226,191 @@ async function fetchUserData(token) {
     }
 }
 
-// Render user profile in skills section
+async function fetchAllRoadmaps(token) {
+    try {
+        const res = await fetch('http://localhost:5000/api/roadmaps');
+        const data = await res.json();
+        if (data.success) {
+            roadmaps = data.data;
+            renderAvailableRoadmaps(token);
+        }
+    } catch (err) {
+        console.error('Error fetching roadmaps:', err);
+    }
+}
+
+async function fetchUserProgress(token) {
+    try {
+        const res = await fetch('http://localhost:5000/api/roadmaps/progress', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+            enrolledProgress = data.data;
+            renderEnrolledRoadmaps();
+            updateXpAndBadges();
+        }
+    } catch (err) {
+        console.error('Error fetching user progress:', err);
+    }
+}
+
+function renderAvailableRoadmaps(token) {
+    const container = document.getElementById('roadmaps-grid');
+    if (!container) return;
+
+    const enrolledRoadmapIds = new Set(enrolledProgress.map(p => p.roadmap));
+    const availableRoadmaps = roadmaps.filter(r => !enrolledRoadmapIds.has(r._id));
+
+    container.innerHTML = availableRoadmaps.map(roadmap => `
+        <div class="roadmap-card">
+            <div class="roadmap-header">
+                <span class="roadmap-category">${roadmap.category}</span>
+                <span class="roadmap-difficulty ${roadmap.difficulty.toLowerCase()}">${roadmap.difficulty}</span>
+            </div>
+            <h3 class="roadmap-title">${roadmap.title}</h3>
+            <p class="roadmap-desc">${roadmap.estimatedDuration} • ${roadmap.steps?.length || 0} steps</p>
+            <div class="roadmap-stats">
+                <span class="roadmap-stat"><i class="fas fa-clock"></i> ${roadmap.estimatedDuration}</span>
+                <span class="roadmap-stat"><i class="fas fa-list"></i> ${roadmap.steps?.length || 0} steps</span>
+            </div>
+            <button class="enroll-btn" onclick="enrollRoadmap('${roadmap._id}', '${token}')">Enroll Now</button>
+        </div>
+    `).join('');
+}
+
+async function enrollRoadmap(roadmapId, token) {
+    try {
+        const res = await fetch(`http://localhost:5000/api/roadmaps/${roadmapId}/enroll`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await res.json();
+        if (data.success) {
+            showNotification('success', 'Enrolled!', 'You have successfully enrolled in the roadmap!');
+            fetchAllRoadmaps(token);
+            fetchUserProgress(token);
+        }
+    } catch (err) {
+        console.error('Error enrolling:', err);
+    }
+}
+
+function renderEnrolledRoadmaps() {
+    const container = document.getElementById('enrolled-roadmaps-grid');
+    if (!container) return;
+
+    if (enrolledProgress.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-light);">You are not enrolled in any roadmaps yet!</p>';
+        return;
+    }
+
+    container.innerHTML = enrolledProgress.map(progress => {
+        const roadmap = progress.roadmapData;
+        const completionPercent = Math.round((progress.completedSteps.length / roadmap.steps.length) * 100);
+        const completedStepIds = new Set(progress.completedSteps.map(s => s.stepId));
+
+        return `
+            <div class="enrolled-roadmap-card">
+                <div class="roadmap-header">
+                    <span class="roadmap-category">${roadmap.category}</span>
+                    <span class="roadmap-difficulty ${roadmap.difficulty.toLowerCase()}">${roadmap.difficulty}</span>
+                </div>
+                <h3 class="roadmap-title">${roadmap.title}</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${completionPercent}%"></div>
+                </div>
+                <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">${completionPercent}% Complete</p>
+                
+                <div class="roadmap-steps">
+                    ${roadmap.steps.sort((a, b) => a.unlockOrder - b.unlockOrder).map(step => {
+                        const isCompleted = completedStepIds.has(step._id);
+                        const isUnlocked = step.unlockOrder <= progress.currentStep;
+                        
+                        return `
+                            <div class="roadmap-step">
+                                <div class="step-checkbox ${isCompleted ? 'completed' : ''} ${!isUnlocked ? 'locked' : ''}"
+                                     onclick="completeStep('${progress._id}', '${step._id}')">
+                                    ${isCompleted ? '<i class="fas fa-check"></i>' : (isUnlocked ? '' : '<i class="fas fa-lock"></i>')}
+                                </div>
+                                <div class="step-content">
+                                    <h4 class="step-title">${step.title}</h4>
+                                    <p class="step-desc">${step.description}</p>
+                                </div>
+                                <span class="step-xp">+${step.xpPoints} XP</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function completeStep(progressId, stepId) {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`http://localhost:5000/api/roadmaps/progress/${progressId}/complete`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ stepId })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showNotification('success', 'Step Completed!', 'Great job! Keep up the good work!');
+            fetchUserProgress(token);
+        }
+    } catch (err) {
+        console.error('Error completing step:', err);
+    }
+}
+
+function updateXpAndBadges() {
+    const totalXPEl = document.getElementById('total-xp');
+    const streakEl = document.getElementById('current-streak');
+    const badgesEl = document.getElementById('badges-container');
+
+    let totalXP = 0;
+    let maxStreak = 0;
+    let allBadges = [];
+
+    enrolledProgress.forEach(progress => {
+        totalXP += progress.xpEarned || 0;
+        if (progress.streak > maxStreak) maxStreak = progress.streak;
+        if (progress.badges) allBadges = [...allBadges, ...progress.badges];
+    });
+
+    if (totalXPEl) totalXPEl.textContent = totalXP;
+    if (streakEl) streakEl.textContent = `${maxStreak} day${maxStreak !== 1 ? 's' : ''}`;
+
+    if (badgesEl) {
+        if (allBadges.length > 0) {
+            badgesEl.innerHTML = allBadges.map(badge => `
+                <div class="badge-item">
+                    <i class="fas fa-award"></i>
+                    <span>${badge.name}</span>
+                </div>
+            `).join('');
+        } else {
+            badgesEl.innerHTML = `
+                <div class="badge-placeholder">
+                    <i class="fas fa-award"></i>
+                    <span>Complete steps to earn badges!</span>
+                </div>
+            `;
+        }
+    }
+}
+
 function renderUserProfile() {
     if (!currentUser) return;
     
-    // Update profile info
     const profileName = document.getElementById('profile-name');
     const profileEmail = document.getElementById('profile-email');
     const profileDegree = document.getElementById('profile-degree');
@@ -306,13 +426,11 @@ function renderUserProfile() {
     if (profileTime) profileTime.textContent = currentUser.timeAvailable || 'N/A';
 }
 
-// Helper to get numeric value for skill level
 function getSkillValue(level) {
     const map = { 'Beginner': 1, 'Intermediate': 2, 'Advanced': 3, 'Expert': 4 };
     return map[level] || 1;
 }
 
-// Render charts
 function renderCharts() {
     if (!currentUser) return;
     
@@ -333,7 +451,6 @@ function renderCharts() {
         getSkillValue(skills.aiMl)
     ];
 
-    // Radar Chart
     const radarCtx = document.getElementById('skillsRadarChart');
     if (radarCtx) {
         if (radarChart) radarChart.destroy();
@@ -369,7 +486,6 @@ function renderCharts() {
         });
     }
 
-    // Bar Chart
     const barCtx = document.getElementById('skillsBarChart');
     if (barCtx) {
         if (barChart) barChart.destroy();
