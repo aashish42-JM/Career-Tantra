@@ -40,6 +40,8 @@ let roadmaps = [];
 let enrolledProgress = [];
 let skills = [];
 let userSkillProgress = [];
+let opportunities = [];
+let userSavedOpportunities = new Set();
 
 document.addEventListener('DOMContentLoaded', function() {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -69,6 +71,8 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchUserProgress(token);
     fetchAllSkills(token);
     fetchUserSkillProgress(token);
+    fetchOpportunities(token);
+    fetchSavedOpportunities(token);
     
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
@@ -645,3 +649,168 @@ function renderCharts() {
         });
     }
 }
+
+async function fetchOpportunities(token) {
+    try {
+        const params = new URLSearchParams();
+        const typeFilter = document.getElementById('opportunity-type-filter')?.value;
+        const searchQuery = document.getElementById('opportunity-search')?.value;
+        const sortBy = document.getElementById('opportunity-sort')?.value;
+        
+        if (typeFilter) params.append('type', typeFilter);
+        if (searchQuery) params.append('search', searchQuery);
+        if (sortBy) params.append('sort', sortBy);
+        
+        const url = `http://localhost:5000/api/opportunities?${params.toString()}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.success) {
+            opportunities = data.data;
+            renderOpportunities();
+            renderFeaturedOpportunities();
+        }
+    } catch (err) {
+        console.error('Error fetching opportunities:', err);
+    }
+}
+
+async function fetchSavedOpportunities(token) {
+    try {
+        const res = await fetch('http://localhost:5000/api/opportunities/user/saved', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+            userSavedOpportunities = new Set(data.data.map(uo => uo.opportunity));
+            renderOpportunities();
+            renderFeaturedOpportunities();
+        }
+    } catch (err) {
+        console.error('Error fetching saved opportunities:', err);
+    }
+}
+
+function formatDeadline(deadlineStr) {
+    const deadline = new Date(deadlineStr);
+    const now = new Date();
+    const diff = deadline - now;
+    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    
+    if (daysLeft < 0) return 'Deadline passed';
+    if (daysLeft === 0) return 'Deadline today!';
+    if (daysLeft === 1) return 'Deadline tomorrow';
+    return `${daysLeft} days left`;
+}
+
+function formatOpportunityType(type) {
+    const map = {
+        'internship': 'Internship',
+        'hackathon': 'Hackathon',
+        'scholarship': 'Scholarship',
+        'workshop': 'Workshop',
+        'tech-event': 'Tech Event',
+        'competition': 'Competition'
+    };
+    return map[type] || type;
+}
+
+function renderOpportunityCard(opportunity) {
+    const isSaved = userSavedOpportunities.has(opportunity._id);
+    return `
+        <div class="opportunity-card ${opportunity.isFeatured ? 'featured' : ''}">
+            <span class="opportunity-type ${opportunity.type}">${formatOpportunityType(opportunity.type)}</span>
+            <h3 class="opportunity-title">${opportunity.title}</h3>
+            <div class="opportunity-company">${opportunity.company}</div>
+            <div class="opportunity-meta">
+                <div class="opportunity-meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${opportunity.location}</span>
+                </div>
+            </div>
+            <div class="opportunity-deadline">
+                <i class="fas fa-clock"></i>
+                <span>${formatDeadline(opportunity.deadline)}</span>
+            </div>
+            <p class="opportunity-description">${opportunity.description}</p>
+            <div class="opportunity-tags">
+                ${opportunity.tags.map(tag => `<span class="opportunity-tag">${tag}</span>`).join('')}
+            </div>
+            <div class="opportunity-actions">
+                <button class="opportunity-btn apply" onclick="window.open('${opportunity.applicationLink}', '_blank')">
+                    <i class="fas fa-external-link-alt"></i> Apply
+                </button>
+                <button class="opportunity-btn save ${isSaved ? 'saved' : ''}" onclick="toggleSaveOpportunity('${opportunity._id}')">
+                    <i class="fas ${isSaved ? 'fa-bookmark' : 'fa-bookmark'}"></i> ${isSaved ? 'Saved' : 'Save'}
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function renderOpportunities() {
+    const container = document.getElementById('opportunities-grid');
+    if (!container) return;
+    container.innerHTML = opportunities
+        .filter(o => !o.isFeatured)
+        .map(renderOpportunityCard)
+        .join('');
+}
+
+function renderFeaturedOpportunities() {
+    const container = document.getElementById('featured-opportunities-grid');
+    if (!container) return;
+    const featured = opportunities.filter(o => o.isFeatured);
+    if (featured.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-light); text-align: center;">No featured opportunities at the moment.</p>';
+        return;
+    }
+    container.innerHTML = featured.map(renderOpportunityCard).join('');
+}
+
+async function toggleSaveOpportunity(opportunityId) {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`http://localhost:5000/api/opportunities/${opportunityId}/save`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+            if (data.data.isSaved) {
+                userSavedOpportunities.add(opportunityId);
+                showNotification('success', 'Saved!', 'Opportunity saved successfully!');
+            } else {
+                userSavedOpportunities.delete(opportunityId);
+                showNotification('success', 'Removed!', 'Opportunity removed from saved!');
+            }
+            renderOpportunities();
+            renderFeaturedOpportunities();
+        }
+    } catch (err) {
+        console.error('Error saving opportunity:', err);
+    }
+}
+
+// Add filter event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('opportunity-search');
+    const typeFilter = document.getElementById('opportunity-type-filter');
+    const sortSelect = document.getElementById('opportunity-sort');
+    
+    const handleFilterChange = () => {
+        const token = localStorage.getItem('token');
+        fetchOpportunities(token);
+    };
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', handleFilterChange);
+    }
+    
+    if (typeFilter) {
+        typeFilter.addEventListener('change', handleFilterChange);
+    }
+    
+    if (sortSelect) {
+        sortSelect.addEventListener('change', handleFilterChange);
+    }
+});

@@ -191,6 +191,40 @@
         </div>
     </section>
 
+    <!-- Opportunity Board Section -->
+    <section id="opportunity-board" class="opportunity-board-section">
+        <div class="container">
+            <h2 class="section-title">Opportunities For You</h2>
+            <p class="section-subtitle">Find internships, hackathons, and more!</p>
+
+            <!-- Filters -->
+            <div class="opportunity-filters">
+                <input type="text" id="opportunity-search" placeholder="Search opportunities..." class="search-input">
+                <select id="opportunity-type-filter" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="internship">Internship</option>
+                    <option value="hackathon">Hackathon</option>
+                    <option value="scholarship">Scholarship</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="tech-event">Tech Event</option>
+                    <option value="competition">Competition</option>
+                </select>
+                <select id="opportunity-sort" class="filter-select">
+                    <option value="">Sort By</option>
+                    <option value="deadline">Deadline (Earliest First)</option>
+                </select>
+            </div>
+
+            <!-- Featured Opportunities -->
+            <h3 class="subsection-title" style="margin-top: 2rem; margin-bottom: 1rem;">🔥 Featured Opportunities</h3>
+            <div id="featured-opportunities-grid" class="opportunities-grid"></div>
+
+            <!-- All Opportunities -->
+            <h3 class="subsection-title" style="margin-top: 2rem; margin-bottom: 1rem;">All Opportunities</h3>
+            <div id="opportunities-grid" class="opportunities-grid"></div>
+        </div>
+    </section>
+
     <!-- Personalized User Profile & Skills Section -->
     <section id="skills" class="dashboard-skills">
         <div class="container">
@@ -343,9 +377,46 @@
         .info-label { font-size: 0.85rem; color: var(--text-light); }
         .info-value { font-weight: 600; color: var(--text-dark); }
         .skills-chart-card canvas { max-height: 300px; }
+        /* Opportunity Board Section */
+        .opportunity-board-section { padding: 4rem 0; }
+        .opportunity-filters { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .search-input, .filter-select { padding: 0.75rem 1rem; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; }
+        .search-input { flex: 1; min-width: 250px; }
+        .filter-select { min-width: 180px; cursor: pointer; }
+        .opportunities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .opportunity-card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .opportunity-card:hover { transform: translateY(-5px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .opportunity-card.featured { border: 2px solid var(--primary-color); }
+        .opportunity-card.featured::before { content: 'FEATURED'; position: absolute; top: 15px; right: -30px; background: var(--primary-color); color: white; padding: 0.25rem 2.5rem; font-size: 0.7rem; font-weight: 700; transform: rotate(45deg); }
+        .opportunity-type { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem; }
+        .opportunity-type.internship { background: #dbeafe; color: #1d4ed8; }
+        .opportunity-type.hackathon { background: #fef3c7; color: #d97706; }
+        .opportunity-type.scholarship { background: #d1fae5; color: #059669; }
+        .opportunity-type.workshop { background: #fce7f3; color: #be185d; }
+        .opportunity-type.tech-event { background: #ede9fe; color: #7c3aed; }
+        .opportunity-type.competition { background: #fee2e2; color: #dc2626; }
+        .opportunity-title { font-size: 1.35rem; font-weight: 700; color: var(--text-dark); margin: 0 0 0.5rem 0; }
+        .opportunity-company { font-size: 1.05rem; font-weight: 600; color: var(--primary-color); margin-bottom: 0.75rem; }
+        .opportunity-meta { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .opportunity-meta-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-light); }
+        .opportunity-meta-item i { color: var(--primary-color); }
+        .opportunity-deadline { font-weight: 600; color: #dc2626; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+        .opportunity-description { color: var(--text-light); margin-bottom: 1rem; line-height: 1.6; }
+        .opportunity-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .opportunity-tag { background: var(--bg-light); color: var(--text-dark); padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
+        .opportunity-actions { display: flex; gap: 1rem; }
+        .opportunity-btn { flex: 1; padding: 0.75rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: none; }
+        .opportunity-btn.apply { background: var(--primary-color); color: white; }
+        .opportunity-btn.apply:hover { background: #5a5df3; }
+        .opportunity-btn.save { background: var(--bg-light); color: var(--text-dark); border: 1px solid #e5e7eb; }
+        .opportunity-btn.save:hover { background: #f3f4f6; }
+        .opportunity-btn.save.saved { background: #d1fae5; color: #059669; border-color: #059669; }
+
         @media (max-width: 768px) {
             .skills-grid { grid-template-columns: 1fr; }
             .xp-badges-grid { grid-template-columns: 1fr; }
+            .opportunity-filters { flex-direction: column; }
+            .search-input, .filter-select { width: 100%; min-width: unset; }
         }
     </style>
 

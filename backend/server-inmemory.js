@@ -27,6 +27,8 @@ const ROADMAPS_FILE = path.join(DATA_DIR, 'roadmaps.json');
 const USER_PROGRESS_FILE = path.join(DATA_DIR, 'userProgress.json');
 const SKILLS_FILE = path.join(DATA_DIR, 'skills.json');
 const USER_SKILL_PROGRESS_FILE = path.join(DATA_DIR, 'userSkillProgress.json');
+const OPPORTUNITIES_FILE = path.join(DATA_DIR, 'opportunities.json');
+const USER_OPPORTUNITIES_FILE = path.join(DATA_DIR, 'userOpportunities.json');
 
 // Helper functions to read/write JSON files
 function readJSONFile(filePath, defaultData) {
@@ -62,6 +64,8 @@ let roadmaps = readJSONFile(ROADMAPS_FILE, []);
 let userProgress = readJSONFile(USER_PROGRESS_FILE, []);
 let skills = readJSONFile(SKILLS_FILE, []);
 let userSkillProgress = readJSONFile(USER_SKILL_PROGRESS_FILE, []);
+let opportunities = readJSONFile(OPPORTUNITIES_FILE, []);
+let userOpportunities = readJSONFile(USER_OPPORTUNITIES_FILE, []);
 
 // Create default admin if not exists
 const createDefaultAdmin = async () => {
@@ -387,6 +391,94 @@ const createDefaultSkills = () => {
     skills = defaultSkills;
     writeJSONFile(SKILLS_FILE, skills);
     console.log('✅ Default skills created!');
+  }
+};
+
+const createDefaultOpportunities = () => {
+  if (opportunities.length === 0) {
+    const defaultOpportunities = [
+      {
+        _id: 'opp-1',
+        title: 'Frontend Developer Intern',
+        company: 'Leapfrog Technology',
+        location: 'Kathmandu, Nepal',
+        type: 'internship',
+        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        description: 'Join our team as a frontend developer intern and work on real-world projects using React.js.',
+        applicationLink: 'https://leapfrog.tech/careers',
+        tags: ['React', 'HTML', 'CSS', 'JavaScript'],
+        isFeatured: true,
+        createdAt: new Date()
+      },
+      {
+        _id: 'opp-2',
+        title: 'Nepal AI Hackathon 2024',
+        company: 'AI Nepal',
+        location: 'Virtual',
+        type: 'hackathon',
+        deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+        description: 'Build AI-powered solutions for real-world problems in Nepal.',
+        applicationLink: 'https://ainepal.org/hackathon',
+        tags: ['AI', 'Machine Learning', 'Python'],
+        isFeatured: true,
+        createdAt: new Date()
+      },
+      {
+        _id: 'opp-3',
+        title: 'Scholarship for CSIT Students',
+        company: 'Nepal Education Foundation',
+        location: 'Nepal',
+        type: 'scholarship',
+        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        description: 'Full scholarship for deserving CSIT students in Nepal.',
+        applicationLink: 'https://nef.org.np/scholarship',
+        tags: ['Scholarship', 'CSIT', 'Education'],
+        isFeatured: false,
+        createdAt: new Date()
+      },
+      {
+        _id: 'opp-4',
+        title: 'Web Development Workshop',
+        company: 'Kathmandu Tech Hub',
+        location: 'Lalitpur, Nepal',
+        type: 'workshop',
+        deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        description: 'Learn full-stack web development from industry experts.',
+        applicationLink: 'https://ktmtechhub.com/workshop',
+        tags: ['Web Development', 'Workshop', 'React'],
+        isFeatured: false,
+        createdAt: new Date()
+      },
+      {
+        _id: 'opp-5',
+        title: 'Nepal Tech Summit 2024',
+        company: 'Tech Nepal Association',
+        location: 'Bhrikutimandap, Kathmandu',
+        type: 'tech-event',
+        deadline: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+        description: 'Join the biggest tech event in Nepal with speakers from around the world.',
+        applicationLink: 'https://techsummitnepal.com',
+        tags: ['Tech', 'Event', 'Networking'],
+        isFeatured: true,
+        createdAt: new Date()
+      },
+      {
+        _id: 'opp-6',
+        title: 'Coding Competition - Code Ninja',
+        company: 'Code Academy Nepal',
+        location: 'Virtual',
+        type: 'competition',
+        deadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+        description: 'Participate in the national coding competition and win exciting prizes.',
+        applicationLink: 'https://codeacademynp.com/competition',
+        tags: ['Competition', 'Coding', 'DSA'],
+        isFeatured: false,
+        createdAt: new Date()
+      }
+    ];
+    opportunities = defaultOpportunities;
+    writeJSONFile(OPPORTUNITIES_FILE, opportunities);
+    console.log('✅ Default opportunities created!');
   }
 };
 
@@ -1079,12 +1171,240 @@ app.put('/api/skills/:skillId/complete-topic', (req, res) => {
   }
 });
 
+// -------------------
+// OPPORTUNITY ROUTES
+// -------------------
+
+// Get all opportunities (with filters)
+app.get('/api/opportunities', (req, res) => {
+  try {
+    let filtered = [...opportunities];
+    
+    // Filter by type
+    if (req.query.type) {
+      filtered = filtered.filter(o => o.type === req.query.type);
+    }
+    
+    // Search by title, company, or tags
+    if (req.query.search) {
+      const searchTerm = req.query.search.toLowerCase();
+      filtered = filtered.filter(o => 
+        o.title.toLowerCase().includes(searchTerm) || 
+        o.company.toLowerCase().includes(searchTerm) || 
+        o.tags.some(t => t.toLowerCase().includes(searchTerm))
+      );
+    }
+    
+    // Sort by deadline
+    if (req.query.sort === 'deadline') {
+      filtered.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+    }
+    
+    res.status(200).json({ success: true, data: filtered });
+  } catch (error) {
+    console.error('Error getting opportunities:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Get featured opportunities
+app.get('/api/opportunities/featured', (req, res) => {
+  try {
+    const featured = opportunities.filter(o => o.isFeatured);
+    res.status(200).json({ success: true, data: featured });
+  } catch (error) {
+    console.error('Error getting featured opportunities:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Get user's saved opportunities
+app.get('/api/opportunities/user/saved', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = users.find(u => u._id === decoded.id);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+
+    const saved = userOpportunities.filter(u => u.user === user._id && u.isSaved);
+    // Add opportunity details
+    const savedWithDetails = saved.map(s => {
+      const opp = opportunities.find(o => o._id === s.opportunity);
+      return { ...s, opportunityData: opp };
+    });
+    res.status(200).json({ success: true, data: savedWithDetails });
+  } catch (error) {
+    console.error('Error getting saved opportunities:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Save/unsave opportunity
+app.post('/api/opportunities/:opportunityId/save', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = users.find(u => u._id === decoded.id);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+
+    const opportunity = opportunities.find(o => o._id === req.params.opportunityId);
+    if (!opportunity) {
+      return res.status(404).json({ success: false, message: 'Opportunity not found' });
+    }
+
+    let userOpp = userOpportunities.find(u => u.user === user._id && u.opportunity === req.params.opportunityId);
+    
+    if (!userOpp) {
+      // Create new
+      userOpp = {
+        _id: `user-opp-${Date.now()}`,
+        user: user._id,
+        opportunity: req.params.opportunityId,
+        isSaved: true,
+        savedAt: new Date(),
+        status: 'saved',
+        createdAt: new Date()
+      };
+      userOpportunities.push(userOpp);
+    } else {
+      // Toggle saved
+      userOpp.isSaved = !userOpp.isSaved;
+      if (userOpp.isSaved) {
+        userOpp.savedAt = new Date();
+      }
+    }
+
+    writeJSONFile(USER_OPPORTUNITIES_FILE, userOpportunities);
+    res.status(200).json({ success: true, data: userOpp });
+  } catch (error) {
+    console.error('Error saving opportunity:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin: Create opportunity
+app.post('/api/opportunities', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const admin = admins.find(a => a._id === decoded.id);
+    if (!admin) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    const { title, company, location, type, deadline, description, applicationLink, tags, isFeatured } = req.body;
+    const newOpp = {
+      _id: `opp-${Date.now()}`,
+      title,
+      company,
+      location,
+      type,
+      deadline: new Date(deadline),
+      description,
+      applicationLink,
+      tags: tags || [],
+      isFeatured: isFeatured || false,
+      createdAt: new Date()
+    };
+    opportunities.push(newOpp);
+    writeJSONFile(OPPORTUNITIES_FILE, opportunities);
+    res.status(201).json({ success: true, data: newOpp });
+  } catch (error) {
+    console.error('Error creating opportunity:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin: Update opportunity
+app.put('/api/opportunities/:opportunityId', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const admin = admins.find(a => a._id === decoded.id);
+    if (!admin) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    const index = opportunities.findIndex(o => o._id === req.params.opportunityId);
+    if (index === -1) {
+      return res.status(404).json({ success: false, message: 'Opportunity not found' });
+    }
+
+    opportunities[index] = {
+      ...opportunities[index],
+      ...req.body,
+      deadline: req.body.deadline ? new Date(req.body.deadline) : opportunities[index].deadline
+    };
+    writeJSONFile(OPPORTUNITIES_FILE, opportunities);
+    res.status(200).json({ success: true, data: opportunities[index] });
+  } catch (error) {
+    console.error('Error updating opportunity:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin: Delete opportunity
+app.delete('/api/opportunities/:opportunityId', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const admin = admins.find(a => a._id === decoded.id);
+    if (!admin) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    opportunities = opportunities.filter(o => o._id !== req.params.opportunityId);
+    userOpportunities = userOpportunities.filter(u => u.opportunity !== req.params.opportunityId);
+    writeJSONFile(OPPORTUNITIES_FILE, opportunities);
+    writeJSONFile(USER_OPPORTUNITIES_FILE, userOpportunities);
+    res.status(200).json({ success: true, message: 'Opportunity deleted' });
+  } catch (error) {
+    console.error('Error deleting opportunity:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // Start server
 const startServer = async () => {
   await createDefaultAdmin();
   await createDefaultUser();
   createDefaultRoadmaps();
   createDefaultSkills();
+  createDefaultOpportunities();
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`💾 Data stored in: ${DATA_DIR}`);
