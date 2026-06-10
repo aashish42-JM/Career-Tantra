@@ -124,6 +124,11 @@ const createDefaultUser = async () => {
   }
 };
 
+// Generate a slug from title
+function generateSlug(title) {
+  return title.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
 // Create default roadmaps if not exists
 const createDefaultRoadmaps = () => {
   if (roadmaps.length === 0) {
@@ -131,50 +136,69 @@ const createDefaultRoadmaps = () => {
       {
         _id: 'roadmap-1',
         title: 'Full Stack Web Development',
+        slug: 'full-stack-web-development',
+        description: 'Master full stack development from basics to advanced. Build real-world projects.',
         category: 'Full Stack Development',
-        difficulty: 'Beginner',
+        difficultyLevel: 'Beginner',
         estimatedDuration: '3 months',
+        icon: 'fa-laptop-code',
         tags: ['web', 'javascript', 'react', 'nodejs'],
+        careerPath: 'Full Stack Developer',
+        createdBy: 'System',
+        isFeatured: true,
         steps: [
           {
             _id: 'step-1-1',
-            title: 'Learn HTML & CSS Fundamentals',
-            description: 'Master the building blocks of the web.',
+            title: 'HTML & CSS Fundamentals',
+            description: 'Learn basic HTML tags, semantic HTML, CSS selectors, flexbox, and grid.',
             unlockOrder: 1,
             xpPoints: 50,
+            estimatedTime: '1 week',
             resources: [
               { title: 'MDN Web Docs', url: 'https://developer.mozilla.org/en-US/docs/Learn/HTML', type: 'documentation' },
               { title: 'FreeCodeCamp', url: 'https://www.freecodecamp.org/learn/2022/responsive-web-design/', type: 'course' },
             ],
+            youtubeLinks: [
+              { title: 'HTML & CSS Crash Course', url: 'https://www.youtube.com/watch?v=HGTJBJ98h4I' },
+            ],
             projects: [
-              { title: 'Personal Portfolio', description: 'Build a simple portfolio website using HTML and CSS', difficulty: 'Beginner' },
+              { title: 'Personal Portfolio', description: 'Build a simple portfolio website using HTML and CSS', difficulty: 'Beginner', isMilestone: false },
             ],
           },
           {
             _id: 'step-1-2',
             title: 'JavaScript Essentials',
-            description: 'Learn the basics of JavaScript programming.',
+            description: 'Master variables, data types, functions, arrays, objects, and DOM.',
             unlockOrder: 2,
             xpPoints: 100,
+            estimatedTime: '1.5 weeks',
             resources: [
               { title: 'JavaScript.info', url: 'https://javascript.info/', type: 'article' },
-              { title: 'You Don\'t Know JS', url: 'https://github.com/getify/You-Dont-Know-JS', type: 'documentation' },
             ],
             projects: [
-              { title: 'Todo List App', description: 'Build a simple todo app using vanilla JS', difficulty: 'Beginner' },
+              { title: 'Todo List App', description: 'Build a todo app with CRUD operations', difficulty: 'Beginner', isMilestone: true },
             ],
           },
           {
             _id: 'step-1-3',
-            title: 'DOM Manipulation',
-            description: 'Learn how to interact with the DOM using JavaScript.',
+            title: 'React Basics',
+            description: 'Learn React, components, props, state, and hooks.',
             unlockOrder: 3,
-            xpPoints: 75,
-            resources: [
-              { title: 'MDN DOM', url: 'https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model', type: 'documentation' },
-            ],
+            xpPoints: 150,
+            estimatedTime: '2 weeks',
             projects: [
-              { title: 'Interactive Quiz', description: 'Build a quiz with DOM manipulation', difficulty: 'Intermediate' },
+              { title: 'React Calculator', description: 'Create a calculator in React', difficulty: 'Intermediate', isMilestone: false },
+            ],
+          },
+          {
+            _id: 'step-1-4',
+            title: 'Node.js & Express',
+            description: 'Build REST APIs using Node.js and Express.',
+            unlockOrder: 4,
+            xpPoints: 200,
+            estimatedTime: '2.5 weeks',
+            projects: [
+              { title: 'Backend API', description: 'Create a REST API for a simple app', difficulty: 'Intermediate', isMilestone: true },
             ],
           },
         ],
@@ -182,39 +206,147 @@ const createDefaultRoadmaps = () => {
       },
       {
         _id: 'roadmap-2',
+        title: 'Frontend Development',
+        slug: 'frontend-development',
+        description: 'Become a frontend developer: HTML, CSS, JS, React, and more.',
+        category: 'Frontend Development',
+        difficultyLevel: 'Beginner',
+        estimatedDuration: '2 months',
+        icon: 'fa-desktop',
+        tags: ['frontend', 'react', 'css'],
+        careerPath: 'Frontend Developer',
+        isFeatured: true,
+        steps: [
+          { _id: 'step-2-1', title: 'HTML & CSS', description: 'Foundation of frontend', unlockOrder:1, xpPoints:50, estimatedTime:'1 week', projects:[{title:'Landing Page', difficulty:'Beginner'}] },
+          { _id: 'step-2-2', title: 'JavaScript & DOM', description: 'Dynamic frontend coding', unlockOrder:2, xpPoints:100, estimatedTime:'1.5 weeks', projects:[{title:'Interactive Form', difficulty:'Intermediate', isMilestone:true}] },
+        ],
+        createdAt: new Date(),
+      },
+      {
+        _id: 'roadmap-3',
+        title: 'Backend Development',
+        slug: 'backend-development',
+        description: 'Build robust server-side apps with Node.js, Express, and databases.',
+        category: 'Backend Development',
+        difficultyLevel: 'Beginner',
+        estimatedDuration: '3 months',
+        icon: 'fa-server',
+        tags: ['backend', 'nodejs', 'api'],
+        careerPath: 'Backend Developer',
+        steps: [
+          { _id: 'step-3-1', title: 'Node.js Basics', description: 'Server-side JavaScript', unlockOrder:1, xpPoints:80, estimatedTime:'1 week' },
+        ],
+        createdAt: new Date(),
+      },
+      {
+        _id: 'roadmap-4',
         title: 'AI & Machine Learning Fundamentals',
+        slug: 'ai-ml-fundamentals',
+        description: 'Start your AI/ML journey: Python, stats, ML algorithms.',
         category: 'AI/ML',
-        difficulty: 'Beginner',
+        difficultyLevel: 'Beginner',
         estimatedDuration: '4 months',
+        icon: 'fa-robot',
         tags: ['ai', 'ml', 'python', 'tensorflow'],
+        careerPath: 'AI/ML Engineer',
+        isFeatured: true,
         steps: [
           {
-            _id: 'step-2-1',
-            title: 'Python for Beginners',
-            description: 'Learn Python programming language basics.',
-            unlockOrder: 1,
-            xpPoints: 60,
-            resources: [
-              { title: 'Python.org', url: 'https://www.python.org/about/gettingstarted/', type: 'documentation' },
-              { title: 'Codecademy', url: 'https://www.codecademy.com/learn/learn-python-3', type: 'course' },
-            ],
-            projects: [
-              { title: 'Number Guessing Game', description: 'Create a simple number guessing game', difficulty: 'Beginner' },
-            ],
+            _id: 'step-4-1', title: 'Python for Beginners', description: 'Learn Python basics', unlockOrder:1, xpPoints:60, estimatedTime:'1 week',
+            projects: [{ title: 'Number Guessing Game', difficulty: 'Beginner' }]
           },
           {
-            _id: 'step-2-2',
-            title: 'Introduction to Machine Learning',
-            description: 'Learn ML basics, algorithms, and tools.',
-            unlockOrder: 2,
-            xpPoints: 120,
-            resources: [
-              { title: 'Coursera ML Course', url: 'https://www.coursera.org/learn/machine-learning', type: 'course' },
-            ],
-            projects: [
-              { title: 'Iris Classification', description: 'Classify iris flowers using scikit-learn', difficulty: 'Intermediate' },
-            ],
+            _id: 'step-4-2', title: 'Introduction to ML', description: 'Learn scikit-learn and basic ML', unlockOrder:2, xpPoints:120, estimatedTime:'2 weeks',
+            projects: [{ title: 'Iris Flower Classification', difficulty: 'Intermediate', isMilestone:true }]
           },
+        ],
+        createdAt: new Date(),
+      },
+      {
+        _id: 'roadmap-5',
+        title: 'Cybersecurity Fundamentals',
+        slug: 'cybersecurity-fundamentals',
+        description: 'Learn core cybersecurity concepts and basics of ethical hacking.',
+        category: 'Cybersecurity',
+        difficultyLevel: 'Beginner',
+        estimatedDuration: '3 months',
+        icon: 'fa-shield-halved',
+        tags: ['security', 'hacking', 'network'],
+        careerPath: 'Cybersecurity Specialist',
+        steps: [ { _id:'step-5-1', title:'Networking Basics', description:'Learn TCP/IP, DNS, etc.', unlockOrder:1, xpPoints:70 } ],
+        createdAt: new Date(),
+      },
+      {
+        _id: 'roadmap-6',
+        title: 'Data Science Essentials',
+        slug: 'data-science-essentials',
+        description: 'Learn data analysis, visualization, and pandas.',
+        category: 'Data Science',
+        difficultyLevel: 'Beginner',
+        estimatedDuration: '2.5 months',
+        icon: 'fa-chart-simple',
+        tags: ['data', 'pandas', 'visualization'],
+        careerPath: 'Data Scientist',
+        steps: [ { _id:'step-6-1', title:'Python for Data Analysis', unlockOrder:1, xpPoints:90 } ],
+        createdAt: new Date(),
+      },
+      {
+        _id: 'roadmap-7',
+        title: 'UI/UX Design Fundamentals',
+        slug: 'ui-ux-design-fundamentals',
+        description: 'Learn design principles, Figma, and user research.',
+        category: 'UI/UX Design',
+        difficultyLevel: 'Beginner',
+        estimatedDuration: '2 months',
+        icon: 'fa-palette',
+        tags: ['design', 'figma', 'ux'],
+        careerPath: 'UI/UX Designer',
+        steps: [ { _id:'step-7-1', title:'Design Principles', unlockOrder:1, xpPoints:40 } ],
+        createdAt: new Date(),
+      },
+      {
+        _id: 'roadmap-8',
+        title: 'Mobile App Development (React Native)',
+        slug: 'mobile-app-development-react-native',
+        description: 'Build Android & iOS apps using React Native.',
+        category: 'Mobile App Development',
+        difficultyLevel: 'Intermediate',
+        estimatedDuration: '3 months',
+        icon: 'fa-mobile-screen',
+        tags: ['mobile', 'react-native', 'ios', 'android'],
+        careerPath: 'Mobile Developer',
+        steps: [ { _id:'step-8-1', title:'React Native Setup', unlockOrder:1, xpPoints:80 } ],
+        createdAt: new Date(),
+      },
+      {
+        _id: 'roadmap-9',
+        title: 'DevOps & Cloud Basics',
+        slug: 'devops-cloud-basics',
+        description: 'Learn Docker, CI/CD, and AWS fundamentals.',
+        category: 'DevOps',
+        difficultyLevel: 'Intermediate',
+        estimatedDuration: '3 months',
+        icon: 'fa-cloud-arrow-up',
+        tags: ['devops', 'docker', 'aws'],
+        careerPath: 'DevOps Engineer',
+        steps: [ { _id:'step-9-1', title:'Docker Basics', unlockOrder:1, xpPoints:100 } ],
+        createdAt: new Date(),
+      },
+      {
+        _id: 'roadmap-10',
+        title: 'Freelancing & Career Preparation',
+        slug: 'freelancing-career-preparation',
+        description: 'Build portfolio, learn soft skills, and prepare for job interviews.',
+        category: 'Freelancing & Career Prep',
+        difficultyLevel: 'Beginner',
+        estimatedDuration: '1 month',
+        icon: 'fa-briefcase',
+        tags: ['career', 'interview', 'portfolio'],
+        careerPath: 'Freelancer / Job Seeker',
+        isFeatured: true,
+        steps: [
+          { _id:'step-10-1', title:'Building Portfolio', unlockOrder:1, xpPoints:70 },
+          { _id:'step-10-2', title:'Interview Prep', unlockOrder:2, xpPoints:100 },
         ],
         createdAt: new Date(),
       },
@@ -875,7 +1007,59 @@ Use this information to give personalized, tailored advice!`;
 
 // Get all roadmaps
 app.get('/api/roadmaps', (req, res) => {
-  res.status(200).json({ success: true, data: roadmaps });
+  // Support query params for filtering: category, difficultyLevel
+  let filtered = [...roadmaps];
+  if (req.query.category) {
+    filtered = filtered.filter(r => r.category === req.query.category);
+  }
+  if (req.query.difficultyLevel) {
+    filtered = filtered.filter(r => r.difficultyLevel === req.query.difficultyLevel);
+  }
+  res.status(200).json({ success: true, data: filtered });
+});
+
+// Get recommended roadmaps for user
+app.get('/api/roadmaps/recommended', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      // If not logged in, return featured roadmaps
+      return res.status(200).json({ success: true, data: roadmaps.filter(r => r.isFeatured) });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = users.find(u => u._id === decoded.id);
+    if (!user) {
+      return res.status(200).json({ success: true, data: roadmaps.filter(r => r.isFeatured) });
+    }
+
+    // Personalize based on user interests and skill levels
+    let recommended = [];
+    const userInterests = user.interests || [];
+    const userSkillLevels = user.skillLevels || {};
+
+    // First find roadmaps matching interests
+    roadmaps.forEach(r => {
+      // Check if tags match interests
+      const matchesInterests = r.tags.some(tag => 
+        userInterests.some(interest => interest.toLowerCase().includes(tag.toLowerCase()) || tag.toLowerCase().includes(interest.toLowerCase()))
+      );
+      if (matchesInterests) {
+        recommended.push(r);
+      }
+    });
+
+    // If no matches, use featured roadmaps
+    if (recommended.length === 0) {
+      recommended = roadmaps.filter(r => r.isFeatured);
+    }
+
+    res.status(200).json({ success: true, data: recommended });
+  } catch (error) {
+    res.status(200).json({ success: true, data: roadmaps.filter(r => r.isFeatured) });
+  }
 });
 
 // Get single roadmap
@@ -1023,6 +1207,12 @@ app.put('/api/roadmaps/progress/:progressId/complete', (req, res) => {
 
     // Check for badges
     const completionPercent = Math.round((progress.completedSteps.length / roadmap.steps.length) * 100);
+    progress.completionPercentage = completionPercent; // Add completion percentage
+    progress.lastUpdated = new Date(); // Update last updated time
+    if (!progress.startedAt) {
+      progress.startedAt = new Date(); // Set startedAt if not already set
+    }
+
     if (completionPercent >= 25 && !progress.badges.some(b => b.name === 'First Steps')) {
       progress.badges.push({ name: 'First Steps', description: 'Complete 25% of a roadmap', icon: '🎯', earnedAt: new Date() });
     }

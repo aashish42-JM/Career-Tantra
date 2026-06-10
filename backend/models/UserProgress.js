@@ -2,12 +2,12 @@
 const mongoose = require('mongoose');
 
 const userProgressSchema = new mongoose.Schema({
-  user: {
+  userId: { // renamed to match requirements
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
-  roadmap: {
+  roadmapId: { // renamed to match requirements
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Roadmap',
     required: true,
@@ -19,23 +19,33 @@ const userProgressSchema = new mongoose.Schema({
       default: Date.now,
     },
   }],
-  currentStep: Number,
+  currentStep: {
+    type: Number,
+    default: 1,
+  },
   xpEarned: {
     type: Number,
     default: 0,
   },
-  streak: {
+  completionPercentage: {
     type: Number,
     default: 0,
   },
-  lastActive: Date,
   badges: [{
     name: String,
     description: String,
     icon: String,
     earnedAt: Date,
   }],
-  createdAt: {
+  streak: {
+    type: Number,
+    default: 0,
+  },
+  startedAt: {
+    type: Date,
+    default: Date.now,
+  },
+  lastUpdated: {
     type: Date,
     default: Date.now,
   },

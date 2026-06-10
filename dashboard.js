@@ -42,6 +42,16 @@ let skills = [];
 let userSkillProgress = [];
 let opportunities = [];
 let userSavedOpportunities = new Set();
+let recommendedRoadmaps = [];
+
+// Calculate level from total XP
+function calculateLevel(xp) {
+  if (xp < 100) return 1;
+  if (xp < 300) return 2;
+  if (xp < 600) return 3;
+  if (xp < 1000) return 4;
+  return 5;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -69,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchUserData(token);
     fetchAllRoadmaps(token);
     fetchUserProgress(token);
+    fetchRecommendedRoadmaps(token);
     fetchAllSkills(token);
     fetchUserSkillProgress(token);
     fetchOpportunities(token);
@@ -234,17 +245,17 @@ async function fetchUserData(token) {
     }
 }
 
-async function fetchAllRoadmaps(token) {
-    try {
-        const res = await fetch('http://localhost:5000/api/roadmaps');
-        const data = await res.json();
-        if (data.success) {
-            roadmaps = data.data;
-            renderAvailableRoadmaps(token);
-        }
-    } catch (err) {
-        console.error('Error fetching roadmaps:', err);
+async function fetchAllRoadmaps() {
+  try {
+    const res = await fetch('http://localhost:5000/api/roadmaps');
+    const data = await res.json();
+    if (data.success) {
+      roadmaps = data.data;
+      renderAvailableRoadmaps();
     }
+  } catch (err) {
+    console.error('Error fetching roadmaps:', err);
+  }
 }
 
 async function fetchUserProgress(token) {
@@ -277,22 +288,57 @@ async function fetchAllSkills(token) {
 }
 
 async function fetchUserSkillProgress(token) {
-    try {
-        const res = await fetch('http://localhost:5000/api/skills/progress', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-        if (data.success) {
-            userSkillProgress = data.data;
-            renderSkillCards();
-            updateTotalXp();
-        }
-    } catch (err) {
-        console.error('Error fetching user skill progress:', err);
+  try {
+    const res = await fetch('http://localhost:5000/api/skills/progress', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success) {
+      userSkillProgress = data.data;
+      renderSkillCards();
+      updateTotalXp();
     }
+  } catch (err) {
+    console.error('Error fetching user skill progress:', err);
+  }
 }
 
-function renderAvailableRoadmaps(token) {
+async function fetchRecommendedRoadmaps(token) {
+  try {
+    const res = await fetch('http://localhost:5000/api/roadmaps/recommended', {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+    const data = await res.json();
+    if (data.success) {
+      recommendedRoadmaps = data.data;
+      renderRecommendedRoadmaps();
+    }
+  } catch (err) {
+    console.error('Error fetching recommended roadmaps:', err);
+  }
+}
+
+function renderRecommendedRoadmaps() {
+  const container = document.getElementById('recommended-roadmaps-grid');
+  if (!container) return;
+  container.innerHTML = recommendedRoadmaps.map(roadmap => `
+    <div class="roadmap-card">
+      <div class="roadmap-header">
+        <span class="roadmap-category">${roadmap.category}</span>
+        <span class="roadmap-difficulty ${roadmap.difficultyLevel.toLowerCase()}">${roadmap.difficultyLevel}</span>
+      </div>
+      <h3 class="roadmap-title">${roadmap.title}</h3>
+      <p class="roadmap-desc">${roadmap.description}</p>
+      <div class="roadmap-stats">
+        <span class="roadmap-stat"><i class="fas fa-clock"></i> ${roadmap.estimatedDuration}</span>
+        <span class="roadmap-stat"><i class="fas fa-list"></i> ${roadmap.steps.length} steps</span>
+      </div>
+      <button class="enroll-btn" onclick="enrollRoadmap('${roadmap._id}')">Enroll Now</button>
+    </div>
+  `).join('');
+}
+
+function renderAvailableRoadmaps() {
     const container = document.getElementById('roadmaps-grid');
     if (!container) return;
 
@@ -303,20 +349,21 @@ function renderAvailableRoadmaps(token) {
         <div class="roadmap-card">
             <div class="roadmap-header">
                 <span class="roadmap-category">${roadmap.category}</span>
-                <span class="roadmap-difficulty ${roadmap.difficulty.toLowerCase()}">${roadmap.difficulty}</span>
+                <span class="roadmap-difficulty ${roadmap.difficultyLevel.toLowerCase()}">${roadmap.difficultyLevel}</span>
             </div>
             <h3 class="roadmap-title">${roadmap.title}</h3>
-            <p class="roadmap-desc">${roadmap.estimatedDuration} • ${roadmap.steps?.length || 0} steps</p>
+            <p class="roadmap-desc">${roadmap.description}</p>
             <div class="roadmap-stats">
                 <span class="roadmap-stat"><i class="fas fa-clock"></i> ${roadmap.estimatedDuration}</span>
                 <span class="roadmap-stat"><i class="fas fa-list"></i> ${roadmap.steps?.length || 0} steps</span>
             </div>
-            <button class="enroll-btn" onclick="enrollRoadmap('${roadmap._id}', '${token}')">Enroll Now</button>
+            <button class="enroll-btn" onclick="enrollRoadmap('${roadmap._id}')">Enroll Now</button>
         </div>
     `).join('');
 }
 
-async function enrollRoadmap(roadmapId, token) {
+async function enrollRoadmap(roadmapId) {
+    const token = localStorage.getItem('token');
     try {
         const res = await fetch(`http://localhost:5000/api/roadmaps/${roadmapId}/enroll`, {
             method: 'POST',
@@ -329,8 +376,9 @@ async function enrollRoadmap(roadmapId, token) {
         if (data.success) {
             showNotification('success', 'Enrolled!', 'You have successfully enrolled in the roadmap!');
             const tokenFromStorage = localStorage.getItem('token');
-            fetchAllRoadmaps(tokenFromStorage);
+            fetchAllRoadmaps();
             fetchUserProgress(tokenFromStorage);
+            fetchRecommendedRoadmaps(tokenFromStorage);
         }
     } catch (err) {
         console.error('Error enrolling:', err);
@@ -489,11 +537,16 @@ function updateXpAndBadges() {
 
 function updateTotalXp() {
     const totalXPEl = document.getElementById('total-xp');
+    const levelEl = document.getElementById('user-level');
     let totalXP = 0;
+    let allBadges = [];
     
-    // XP from roadmaps
+    // XP and badges from roadmaps
     enrolledProgress.forEach(p => {
         totalXP += p.xpEarned || 0;
+        if (p.badges) {
+            allBadges = allBadges.concat(p.badges);
+        }
     });
     
     // XP from skills
@@ -504,6 +557,32 @@ function updateTotalXp() {
     if (totalXPEl) {
         totalXPEl.textContent = totalXP;
     }
+    if (levelEl) {
+        levelEl.textContent = calculateLevel(totalXP);
+    }
+    renderBadges(allBadges);
+}
+
+function renderBadges(badges) {
+    const container = document.getElementById('badges-container');
+    if (!container) return;
+    
+    if (badges.length === 0) {
+        container.innerHTML = `
+            <div class="badge-placeholder">
+                <i class="fas fa-award"></i>
+                <span>Complete steps to earn badges!</span>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = badges.map(badge => `
+        <div class="badge-item">
+            <i class="fas fa-award" style="font-size: 2rem; color: #f59e0b;"></i>
+            <span>${badge.name}</span>
+        </div>
+    `).join('');
 }
 
 function updateStreak() {
