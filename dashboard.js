@@ -38,6 +38,8 @@ let radarChart = null;
 let barChart = null;
 let roadmaps = [];
 let enrolledProgress = [];
+let skills = [];
+let userSkillProgress = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -65,6 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchUserData(token);
     fetchAllRoadmaps(token);
     fetchUserProgress(token);
+    fetchAllSkills(token);
+    fetchUserSkillProgress(token);
     
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
@@ -255,6 +259,35 @@ async function fetchUserProgress(token) {
     }
 }
 
+async function fetchAllSkills(token) {
+    try {
+        const res = await fetch('http://localhost:5000/api/skills');
+        const data = await res.json();
+        if (data.success) {
+            skills = data.data;
+            renderSkillCards();
+        }
+    } catch (err) {
+        console.error('Error fetching skills:', err);
+    }
+}
+
+async function fetchUserSkillProgress(token) {
+    try {
+        const res = await fetch('http://localhost:5000/api/skills/progress', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+            userSkillProgress = data.data;
+            renderSkillCards();
+            updateTotalXp();
+        }
+    } catch (err) {
+        console.error('Error fetching user skill progress:', err);
+    }
+}
+
 function renderAvailableRoadmaps(token) {
     const container = document.getElementById('roadmaps-grid');
     if (!container) return;
@@ -291,8 +324,9 @@ async function enrollRoadmap(roadmapId, token) {
         const data = await res.json();
         if (data.success) {
             showNotification('success', 'Enrolled!', 'You have successfully enrolled in the roadmap!');
-            fetchAllRoadmaps(token);
-            fetchUserProgress(token);
+            const tokenFromStorage = localStorage.getItem('token');
+            fetchAllRoadmaps(tokenFromStorage);
+            fetchUserProgress(tokenFromStorage);
         }
     } catch (err) {
         console.error('Error enrolling:', err);
@@ -333,7 +367,7 @@ function renderEnrolledRoadmaps() {
                         return `
                             <div class="roadmap-step">
                                 <div class="step-checkbox ${isCompleted ? 'completed' : ''} ${!isUnlocked ? 'locked' : ''}"
-                                     onclick="completeStep('${progress._id}', '${step._id}')">
+                                     onclick="completeRoadmapStep('${progress._id}', '${step._id}')">
                                     ${isCompleted ? '<i class="fas fa-check"></i>' : (isUnlocked ? '' : '<i class="fas fa-lock"></i>')}
                                 </div>
                                 <div class="step-content">
@@ -350,7 +384,7 @@ function renderEnrolledRoadmaps() {
     }).join('');
 }
 
-async function completeStep(progressId, stepId) {
+async function completeRoadmapStep(progressId, stepId) {
     const token = localStorage.getItem('token');
     try {
         const res = await fetch(`http://localhost:5000/api/roadmaps/progress/${progressId}/complete`, {
@@ -371,40 +405,118 @@ async function completeStep(progressId, stepId) {
     }
 }
 
-function updateXpAndBadges() {
-    const totalXPEl = document.getElementById('total-xp');
-    const streakEl = document.getElementById('current-streak');
-    const badgesEl = document.getElementById('badges-container');
+function renderSkillCards() {
+    const container = document.getElementById('skills-grid');
+    if (!container) return;
 
-    let totalXP = 0;
-    let maxStreak = 0;
-    let allBadges = [];
+    container.innerHTML = skills.map(skill => {
+        const progress = userSkillProgress.find(p => p.skill === skill._id);
+        const level = progress?.level || 'Beginner';
+        const xp = progress?.xp || 0;
+        const completedTopicIds = new Set(progress?.completedTopics?.map(t => t.topicId) || []);
+        const nextLevelThreshold = Object.entries(skill.levelThresholds).find(([lvl, threshold]) => xp < threshold);
+        const xpForNextLevel = nextLevelThreshold ? nextLevelThreshold[1] - xp : 0;
+        const progressPercent = Math.round((xp / (skill.levelThresholds.Expert || 1000)) * 100);
 
-    enrolledProgress.forEach(progress => {
-        totalXP += progress.xpEarned || 0;
-        if (progress.streak > maxStreak) maxStreak = progress.streak;
-        if (progress.badges) allBadges = [...allBadges, ...progress.badges];
-    });
-
-    if (totalXPEl) totalXPEl.textContent = totalXP;
-    if (streakEl) streakEl.textContent = `${maxStreak} day${maxStreak !== 1 ? 's' : ''}`;
-
-    if (badgesEl) {
-        if (allBadges.length > 0) {
-            badgesEl.innerHTML = allBadges.map(badge => `
-                <div class="badge-item">
-                    <i class="fas fa-award"></i>
-                    <span>${badge.name}</span>
+        return `
+            <div class="skill-card">
+                <div class="skill-header">
+                    <div class="skill-icon" style="background-color: ${skill.color}">
+                        <i class="fab ${skill.icon}"></i>
+                    </div>
+                    <div class="skill-info">
+                        <h3>${skill.name}</h3>
+                        <span class="skill-level ${level.toLowerCase()}">${level}</span>
+                    </div>
                 </div>
-            `).join('');
-        } else {
-            badgesEl.innerHTML = `
-                <div class="badge-placeholder">
-                    <i class="fas fa-award"></i>
-                    <span>Complete steps to earn badges!</span>
+                <div class="skill-xp">
+                    <i class="fas fa-star"></i> ${xp} XP
+                    ${xpForNextLevel > 0 ? `<span style="color: var(--text-light); font-weight: 400;">(${xpForNextLevel} XP to next level)</span>` : ''}
                 </div>
-            `;
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${Math.min(progressPercent, 100)}%"></div>
+                </div>
+                <div class="skill-topics">
+                    ${skill.topics.map(topic => `
+                        <div class="skill-topic ${completedTopicIds.has(topic._id) ? 'completed' : ''}"
+                             onclick="completeSkillTopic('${skill._id}', '${topic._id}')">
+                            <div class="topic-checkbox">
+                                ${completedTopicIds.has(topic._id) ? '<i class="fas fa-check"></i>' : ''}
+                            </div>
+                            <div class="topic-content">
+                                <h4 class="topic-title">${topic.name}</h4>
+                                <p class="topic-desc">${topic.description}</p>
+                            </div>
+                            <span class="topic-xp">+${topic.xp} XP</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function completeSkillTopic(skillId, topicId) {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`http://localhost:5000/api/skills/${skillId}/complete-topic`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ topicId })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showNotification('success', 'Topic Completed!', 'Great job! Keep learning!');
+            fetchUserSkillProgress(token);
+            updateTotalXp();
         }
+    } catch (err) {
+        console.error('Error completing topic:', err);
+    }
+}
+
+function updateXpAndBadges() {
+    updateTotalXp();
+    updateStreak();
+}
+
+function updateTotalXp() {
+    const totalXPEl = document.getElementById('total-xp');
+    let totalXP = 0;
+    
+    // XP from roadmaps
+    enrolledProgress.forEach(p => {
+        totalXP += p.xpEarned || 0;
+    });
+    
+    // XP from skills
+    userSkillProgress.forEach(p => {
+        totalXP += p.xp || 0;
+    });
+    
+    if (totalXPEl) {
+        totalXPEl.textContent = totalXP;
+    }
+}
+
+function updateStreak() {
+    const streakEl = document.getElementById('current-streak');
+    let maxStreak = 0;
+    
+    // Calculate max streak from roadmaps and skills
+    enrolledProgress.forEach(p => {
+        if (p.streak > maxStreak) maxStreak = p.streak;
+    });
+    
+    userSkillProgress.forEach(p => {
+        if (p.learningStreak > maxStreak) maxStreak = p.learningStreak;
+    });
+    
+    if (streakEl) {
+        streakEl.textContent = `${maxStreak} day${maxStreak !== 1 ? 's' : ''}`;
     }
 }
 
@@ -434,7 +546,14 @@ function getSkillValue(level) {
 function renderCharts() {
     if (!currentUser) return;
     
-    const skills = currentUser.skillLevels || {
+    const userSkillLevels = {};
+    skills.forEach(skill => {
+        const progress = userSkillProgress.find(p => p.skill === skill._id);
+        userSkillLevels[skill.name] = progress?.level || 'Beginner';
+    });
+    
+    // Use default skill levels if no progress data
+    const skillLevels = currentUser.skillLevels || {
         webDevelopment: 'Beginner',
         programming: 'Beginner',
         dataStructures: 'Beginner',
@@ -444,11 +563,11 @@ function renderCharts() {
 
     const skillNames = ['Web Development', 'Programming', 'Data Structures', 'Database', 'AI/ML'];
     const skillValues = [
-        getSkillValue(skills.webDevelopment),
-        getSkillValue(skills.programming),
-        getSkillValue(skills.dataStructures),
-        getSkillValue(skills.database),
-        getSkillValue(skills.aiMl)
+        getSkillValue(userSkillLevels['HTML'] || skillLevels.webDevelopment),
+        getSkillValue(userSkillLevels['JavaScript'] || skillLevels.programming),
+        getSkillValue(userSkillLevels['DSA'] || skillLevels.dataStructures),
+        getSkillValue(userSkillLevels['MongoDB'] || skillLevels.database),
+        getSkillValue(userSkillLevels['AI/ML'] || skillLevels.aiMl)
     ];
 
     const radarCtx = document.getElementById('skillsRadarChart');

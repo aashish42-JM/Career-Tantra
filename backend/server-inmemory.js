@@ -25,6 +25,8 @@ const ADMINS_FILE = path.join(DATA_DIR, 'admins.json');
 const CHAT_HISTORY_FILE = path.join(DATA_DIR, 'chat-history.json');
 const ROADMAPS_FILE = path.join(DATA_DIR, 'roadmaps.json');
 const USER_PROGRESS_FILE = path.join(DATA_DIR, 'userProgress.json');
+const SKILLS_FILE = path.join(DATA_DIR, 'skills.json');
+const USER_SKILL_PROGRESS_FILE = path.join(DATA_DIR, 'userSkillProgress.json');
 
 // Helper functions to read/write JSON files
 function readJSONFile(filePath, defaultData) {
@@ -58,6 +60,8 @@ let admins = readJSONFile(ADMINS_FILE, []);
 let userChatHistory = readJSONFile(CHAT_HISTORY_FILE, {});
 let roadmaps = readJSONFile(ROADMAPS_FILE, []);
 let userProgress = readJSONFile(USER_PROGRESS_FILE, []);
+let skills = readJSONFile(SKILLS_FILE, []);
+let userSkillProgress = readJSONFile(USER_SKILL_PROGRESS_FILE, []);
 
 // Create default admin if not exists
 const createDefaultAdmin = async () => {
@@ -214,6 +218,175 @@ const createDefaultRoadmaps = () => {
     roadmaps = defaultRoadmaps;
     writeJSONFile(ROADMAPS_FILE, roadmaps);
     console.log('✅ Default roadmaps created!');
+  }
+};
+
+// Create default skills if not exists
+const createDefaultSkills = () => {
+  if (skills.length === 0) {
+    const defaultSkills = [
+      {
+        _id: 'skill-html',
+        name: 'HTML',
+        category: 'Web Development',
+        description: 'The standard markup language for creating web pages.',
+        icon: 'fa-html5',
+        color: '#e34f26',
+        topics: [
+          { _id: 'html-basics', name: 'HTML Basics', xp: 20, description: 'Learn the fundamental tags and structure of HTML.' },
+          { _id: 'html-semantic', name: 'Semantic HTML', xp: 25, description: 'Use semantic tags for better accessibility and SEO.' },
+          { _id: 'html-forms', name: 'Forms & Inputs', xp: 30, description: 'Create and validate HTML forms.' },
+          { _id: 'html-advanced', name: 'Advanced HTML', xp: 35, description: 'Learn HTML5 features like canvas, video, and audio.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 50, Advanced: 150, Expert: 300 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-css',
+        name: 'CSS',
+        category: 'Web Development',
+        description: 'Cascading Style Sheets for styling web pages.',
+        icon: 'fa-css3-alt',
+        color: '#1572b6',
+        topics: [
+          { _id: 'css-basics', name: 'CSS Basics', xp: 20, description: 'Learn selectors, properties, and values.' },
+          { _id: 'css-box', name: 'Box Model', xp: 25, description: 'Understand margin, padding, and border.' },
+          { _id: 'css-flex', name: 'Flexbox', xp: 30, description: 'Create flexible layouts with Flexbox.' },
+          { _id: 'css-grid', name: 'Grid', xp: 35, description: 'Build responsive grids with CSS Grid.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 50, Advanced: 150, Expert: 300 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-javascript',
+        name: 'JavaScript',
+        category: 'Programming',
+        description: 'The programming language of the web.',
+        icon: 'fa-js',
+        color: '#f7df1e',
+        topics: [
+          { _id: 'js-basics', name: 'JS Fundamentals', xp: 25, description: 'Variables, data types, and basic syntax.' },
+          { _id: 'js-functions', name: 'Functions', xp: 30, description: 'Learn function declaration and arrow functions.' },
+          { _id: 'js-dom', name: 'DOM Manipulation', xp: 35, description: 'Interact with the HTML DOM.' },
+          { _id: 'js-async', name: 'Async JavaScript', xp: 40, description: 'Promises, async/await, and fetch API.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 70, Advanced: 200, Expert: 400 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-react',
+        name: 'React',
+        category: 'Web Development',
+        description: 'A JavaScript library for building user interfaces.',
+        icon: 'fa-react',
+        color: '#61dafb',
+        topics: [
+          { _id: 'react-basics', name: 'React Basics', xp: 30, description: 'Components, JSX, and props.' },
+          { _id: 'react-state', name: 'State Management', xp: 35, description: 'useState and useEffect hooks.' },
+          { _id: 'react-router', name: 'React Router', xp: 35, description: 'Client-side routing with React Router.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 80, Advanced: 250, Expert: 500 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-nodejs',
+        name: 'Node.js',
+        category: 'Backend',
+        description: 'JavaScript runtime environment.',
+        icon: 'fa-node-js',
+        color: '#339933',
+        topics: [
+          { _id: 'node-basics', name: 'Node.js Basics', xp: 25, description: 'Introduction to Node.js and NPM.' },
+          { _id: 'node-express', name: 'Express.js', xp: 35, description: 'Web framework for Node.js.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 70, Advanced: 200, Expert: 400 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-mongodb',
+        name: 'MongoDB',
+        category: 'Database',
+        description: 'NoSQL database for modern applications.',
+        icon: 'fa-database',
+        color: '#47a248',
+        topics: [
+          { _id: 'mongo-basics', name: 'MongoDB Basics', xp: 25, description: 'Collections, documents, and CRUD.' },
+          { _id: 'mongo-mongoose', name: 'Mongoose', xp: 35, description: 'ODM for Node.js.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 60, Advanced: 180, Expert: 350 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-dsa',
+        name: 'DSA',
+        category: 'Programming',
+        description: 'Data Structures and Algorithms.',
+        icon: 'fa-code',
+        color: '#68a063',
+        topics: [
+          { _id: 'dsa-arrays', name: 'Arrays & Strings', xp: 30, description: 'Basic array and string problems.' },
+          { _id: 'dsa-linked', name: 'Linked Lists', xp: 35, description: 'Singly and doubly linked lists.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 80, Advanced: 250, Expert: 500 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-python',
+        name: 'Python',
+        category: 'Programming',
+        description: 'A versatile programming language.',
+        icon: 'fa-python',
+        color: '#3776ab',
+        topics: [
+          { _id: 'python-basics', name: 'Python Basics', xp: 25, description: 'Variables, loops, and conditionals.' },
+          { _id: 'python-data', name: 'Data Structures', xp: 30, description: 'Lists, tuples, and dictionaries.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 60, Advanced: 180, Expert: 350 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-ai',
+        name: 'AI/ML',
+        category: 'AI',
+        description: 'Artificial Intelligence and Machine Learning.',
+        icon: 'fa-brain',
+        color: '#ff6f61',
+        topics: [
+          { _id: 'ai-intro', name: 'Introduction to AI', xp: 30, description: 'What is AI and machine learning?' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 70, Advanced: 200, Expert: 400 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-uiux',
+        name: 'UI/UX',
+        category: 'Design',
+        description: 'User Interface and User Experience design.',
+        icon: 'fa-paint-brush',
+        color: '#ff69b4',
+        topics: [
+          { _id: 'ui-basics', name: 'UI Design Basics', xp: 25, description: 'Color, typography, and layout.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 50, Advanced: 150, Expert: 300 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-db',
+        name: 'Database',
+        category: 'Backend',
+        description: 'Database management and SQL.',
+        icon: 'fa-database',
+        color: '#00758f',
+        topics: [
+          { _id: 'db-sql', name: 'SQL Basics', xp: 30, description: 'Introduction to SQL and relational databases.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 60, Advanced: 180, Expert: 350 },
+        createdAt: new Date(),
+      },
+    ];
+    skills = defaultSkills;
+    writeJSONFile(SKILLS_FILE, skills);
+    console.log('✅ Default skills created!');
   }
 };
 
@@ -706,6 +879,7 @@ app.put('/api/roadmaps/progress/:progressId/complete', (req, res) => {
     if (!user) {
       return res.status(401).json({ success: false, message: 'Not authorized' });
     }
+
     const progressIndex = userProgress.findIndex(p => p._id === req.params.progressId);
     if (progressIndex === -1) {
       return res.status(404).json({ success: false, message: 'Progress not found' });
@@ -779,11 +953,138 @@ app.put('/api/roadmaps/progress/:progressId/complete', (req, res) => {
   }
 });
 
+// -------------------
+// SKILL ROUTES
+// -------------------
+
+// Get all skills
+app.get('/api/skills', (req, res) => {
+  res.status(200).json({ success: true, data: skills });
+});
+
+// Get user's skill progress
+app.get('/api/skills/progress', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = users.find(u => u._id === decoded.id);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+
+    const userProgress = userSkillProgress.filter(p => p.user === user._id);
+    res.status(200).json({ success: true, data: userProgress });
+  } catch (error) {
+    res.status(401).json({ success: false, message: 'Not authorized' });
+  }
+});
+
+// Complete a skill topic
+app.put('/api/skills/:skillId/complete-topic', (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = users.find(u => u._id === decoded.id);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+
+    const skill = skills.find(s => s._id === req.params.skillId);
+    if (!skill) {
+      return res.status(404).json({ success: false, message: 'Skill not found' });
+    }
+
+    const { topicId } = req.body;
+    const topic = skill.topics.find(t => t._id === topicId);
+    if (!topic) {
+      return res.status(404).json({ success: false, message: 'Topic not found' });
+    }
+
+    let progress = userSkillProgress.find(p => p.user === user._id && p.skill === req.params.skillId);
+    
+    if (!progress) {
+      // Create new progress if none exists
+      progress = {
+        _id: `skill-progress-${Date.now()}`,
+        user: user._id,
+        skill: req.params.skillId,
+        skillName: skill.name,
+        xp: 0,
+        level: 'Beginner',
+        completedTopics: [],
+        lastUpdated: new Date(),
+        learningStreak: 1,
+        lastPracticed: new Date(),
+        createdAt: new Date(),
+      };
+      userSkillProgress.push(progress);
+    }
+
+    // Check if topic already completed
+    if (progress.completedTopics.some(t => t.topicId === topicId)) {
+      return res.status(400).json({ success: false, message: 'Topic already completed' });
+    }
+
+    // Add completed topic
+    progress.completedTopics.push({
+      topicId,
+      completedAt: new Date(),
+    });
+
+    // Add XP
+    progress.xp += topic.xp;
+
+    // Update skill level
+    if (progress.xp >= skill.levelThresholds.Expert) {
+      progress.level = 'Expert';
+    } else if (progress.xp >= skill.levelThresholds.Advanced) {
+      progress.level = 'Advanced';
+    } else if (progress.xp >= skill.levelThresholds.Intermediate) {
+      progress.level = 'Intermediate';
+    }
+
+    // Update streak
+    const today = new Date();
+    const lastPracticed = new Date(progress.lastPracticed);
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    if (lastPracticed.toDateString() === yesterday.toDateString()) {
+      progress.learningStreak += 1;
+    } else if (lastPracticed.toDateString() !== today.toDateString()) {
+      progress.learningStreak = 1;
+    }
+
+    progress.lastPracticed = today;
+    progress.lastUpdated = today;
+
+    // Save to file
+    writeJSONFile(USER_SKILL_PROGRESS_FILE, userSkillProgress);
+    res.status(200).json({ success: true, data: progress });
+  } catch (error) {
+    console.error('Error completing topic:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // Start server
 const startServer = async () => {
   await createDefaultAdmin();
   await createDefaultUser();
   createDefaultRoadmaps();
+  createDefaultSkills();
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`💾 Data stored in: ${DATA_DIR}`);
