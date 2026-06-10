@@ -192,6 +192,23 @@ document.addEventListener('DOMContentLoaded', function() {
         chatInput.value = '';
         showTypingIndicator();
         
+        // Build context string
+        let context = "Here is the user's current progress:\n";
+        if (enrolledProgress.length > 0) {
+            context += "- Enrolled Roadmaps:\n";
+            enrolledProgress.forEach(p => {
+                context += `  - ${p.roadmapData.title}: ${p.completionPercentage || 0}% complete, ${p.xpEarned} XP earned\n`;
+            });
+        } else {
+            context += "- No roadmaps enrolled yet.\n";
+        }
+        if (userSkillProgress.length > 0) {
+            context += "- Skill Progress:\n";
+            userSkillProgress.forEach(sp => {
+                context += `  - ${sp.skillName}: Level ${sp.level}, ${sp.xp} XP\n`;
+            });
+        }
+        
         try {
             const response = await fetch('http://localhost:5000/api/ai/chat', {
                 method: 'POST',
@@ -199,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    message: message,
+                    message: message + "\n\n" + context,
                     userId: userId
                 })
             });
