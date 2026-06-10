@@ -43,6 +43,7 @@ let userSkillProgress = [];
 let opportunities = [];
 let userSavedOpportunities = new Set();
 let recommendedRoadmaps = [];
+let selectedSkillCategory = '';
 
 // Calculate level from total XP
 function calculateLevel(xp) {
@@ -297,6 +298,24 @@ async function fetchAllSkills(token) {
         const data = await res.json();
         if (data.success) {
             skills = data.data;
+            // Populate category filter
+            const categoryFilter = document.getElementById('skill-category-filter');
+            if (categoryFilter) {
+                // Collect unique categories
+                const categories = [...new Set(skills.map(skill => skill.category))].sort();
+                // Add category options
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    categoryFilter.appendChild(option);
+                });
+                // Add event listener
+                categoryFilter.addEventListener('change', (e) => {
+                    selectedSkillCategory = e.target.value;
+                    renderSkillCards();
+                });
+            }
             renderSkillCards();
         }
     } catch (err) {
@@ -477,8 +496,11 @@ async function completeRoadmapStep(progressId, stepId) {
 function renderSkillCards() {
     const container = document.getElementById('skills-grid');
     if (!container) return;
-
-    container.innerHTML = skills.map(skill => {
+    // Filter skills by category if selected
+    const filteredSkills = selectedSkillCategory 
+        ? skills.filter(skill => skill.category === selectedSkillCategory)
+        : skills;
+    container.innerHTML = filteredSkills.map(skill => {
         const progress = userSkillProgress.find(p => p.skill === skill._id);
         const level = progress?.level || 'Beginner';
         const xp = progress?.xp || 0;
@@ -496,6 +518,9 @@ function renderSkillCards() {
                     <div class="skill-info">
                         <h3>${skill.name}</h3>
                         <span class="skill-level ${level.toLowerCase()}">${level}</span>
+                        <div style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.25rem;">
+                            ${skill.category}
+                        </div>
                     </div>
                 </div>
                 <div class="skill-xp">
@@ -507,8 +532,7 @@ function renderSkillCards() {
                 </div>
                 <div class="skill-topics">
                     ${skill.topics.map(topic => `
-                        <div class="skill-topic ${completedTopicIds.has(topic._id) ? 'completed' : ''}"
-                             onclick="completeSkillTopic('${skill._id}', '${topic._id}')">
+                        <div class="skill-topic ${completedTopicIds.has(topic._id) ? 'completed' : ''}" onclick="completeSkillTopic('${skill._id}', '${topic._id}')">
                             <div class="topic-checkbox">
                                 ${completedTopicIds.has(topic._id) ? '<i class="fas fa-check"></i>' : ''}
                             </div>

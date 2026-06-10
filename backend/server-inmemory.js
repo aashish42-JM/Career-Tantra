@@ -361,10 +361,11 @@ const createDefaultRoadmaps = () => {
 const createDefaultSkills = () => {
   if (skills.length === 0) {
     const defaultSkills = [
+      // FRONTEND SKILLS
       {
         _id: 'skill-html',
         name: 'HTML',
-        category: 'Web Development',
+        category: 'Frontend Development',
         description: 'The standard markup language for creating web pages.',
         icon: 'fa-html5',
         color: '#e34f26',
@@ -380,7 +381,7 @@ const createDefaultSkills = () => {
       {
         _id: 'skill-css',
         name: 'CSS',
-        category: 'Web Development',
+        category: 'Frontend Development',
         description: 'Cascading Style Sheets for styling web pages.',
         icon: 'fa-css3-alt',
         color: '#1572b6',
@@ -396,7 +397,7 @@ const createDefaultSkills = () => {
       {
         _id: 'skill-javascript',
         name: 'JavaScript',
-        category: 'Programming',
+        category: 'Frontend Development',
         description: 'The programming language of the web.',
         icon: 'fa-js',
         color: '#f7df1e',
@@ -412,7 +413,7 @@ const createDefaultSkills = () => {
       {
         _id: 'skill-react',
         name: 'React',
-        category: 'Web Development',
+        category: 'Frontend Development',
         description: 'A JavaScript library for building user interfaces.',
         icon: 'fa-react',
         color: '#61dafb',
@@ -424,10 +425,11 @@ const createDefaultSkills = () => {
         levelThresholds: { Beginner: 0, Intermediate: 80, Advanced: 250, Expert: 500 },
         createdAt: new Date(),
       },
+      // BACKEND SKILLS
       {
         _id: 'skill-nodejs',
         name: 'Node.js',
-        category: 'Backend',
+        category: 'Backend Development',
         description: 'JavaScript runtime environment.',
         icon: 'fa-node-js',
         color: '#339933',
@@ -439,9 +441,24 @@ const createDefaultSkills = () => {
         createdAt: new Date(),
       },
       {
+        _id: 'skill-python',
+        name: 'Python',
+        category: 'Backend Development',
+        description: 'A versatile programming language for backend.',
+        icon: 'fa-python',
+        color: '#3776ab',
+        topics: [
+          { _id: 'python-basics', name: 'Python Basics', xp: 25, description: 'Variables, loops, and conditionals.' },
+          { _id: 'python-flask', name: 'Flask', xp: 35, description: 'Lightweight Python web framework.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 70, Advanced: 200, Expert: 400 },
+        createdAt: new Date(),
+      },
+      // DATABASES
+      {
         _id: 'skill-mongodb',
         name: 'MongoDB',
-        category: 'Database',
+        category: 'Databases',
         description: 'NoSQL database for modern applications.',
         icon: 'fa-database',
         color: '#47a248',
@@ -453,10 +470,25 @@ const createDefaultSkills = () => {
         createdAt: new Date(),
       },
       {
+        _id: 'skill-sql',
+        name: 'SQL',
+        category: 'Databases',
+        description: 'Structured Query Language for relational databases.',
+        icon: 'fa-database',
+        color: '#00758f',
+        topics: [
+          { _id: 'sql-basics', name: 'SQL Basics', xp: 25, description: 'SELECT, INSERT, UPDATE, DELETE.' },
+          { _id: 'sql-joins', name: 'SQL Joins', xp: 35, description: 'Inner, left, right, and full joins.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 60, Advanced: 180, Expert: 350 },
+        createdAt: new Date(),
+      },
+      // PROGRAMMING & DSA
+      {
         _id: 'skill-dsa',
-        name: 'DSA',
+        name: 'Data Structures & Algorithms',
         category: 'Programming',
-        description: 'Data Structures and Algorithms.',
+        description: 'Foundational coding concepts for problem solving.',
         icon: 'fa-code',
         color: '#68a063',
         topics: [
@@ -466,57 +498,123 @@ const createDefaultSkills = () => {
         levelThresholds: { Beginner: 0, Intermediate: 80, Advanced: 250, Expert: 500 },
         createdAt: new Date(),
       },
-      {
-        _id: 'skill-python',
-        name: 'Python',
-        category: 'Programming',
-        description: 'A versatile programming language.',
-        icon: 'fa-python',
-        color: '#3776ab',
-        topics: [
-          { _id: 'python-basics', name: 'Python Basics', xp: 25, description: 'Variables, loops, and conditionals.' },
-          { _id: 'python-data', name: 'Data Structures', xp: 30, description: 'Lists, tuples, and dictionaries.' },
-        ],
-        levelThresholds: { Beginner: 0, Intermediate: 60, Advanced: 180, Expert: 350 },
-        createdAt: new Date(),
-      },
+      // AI/ML & DATA SCIENCE
       {
         _id: 'skill-ai',
         name: 'AI/ML',
-        category: 'AI',
-        description: 'Artificial Intelligence and Machine Learning.',
+        category: 'AI & Data Science',
+        description: 'Artificial Intelligence and Machine Learning basics.',
         icon: 'fa-brain',
         color: '#ff6f61',
         topics: [
           { _id: 'ai-intro', name: 'Introduction to AI', xp: 30, description: 'What is AI and machine learning?' },
+          { _id: 'ml-basics', name: 'ML Fundamentals', xp: 40, description: 'Supervised and unsupervised learning.' },
         ],
-        levelThresholds: { Beginner: 0, Intermediate: 70, Advanced: 200, Expert: 400 },
+        levelThresholds: { Beginner: 0, Intermediate: 80, Advanced: 250, Expert: 500 },
         createdAt: new Date(),
       },
+      // UI/UX & DESIGN
       {
         _id: 'skill-uiux',
-        name: 'UI/UX',
+        name: 'UI/UX Design',
         category: 'Design',
         description: 'User Interface and User Experience design.',
         icon: 'fa-paint-brush',
         color: '#ff69b4',
         topics: [
           { _id: 'ui-basics', name: 'UI Design Basics', xp: 25, description: 'Color, typography, and layout.' },
+          { _id: 'ux-research', name: 'UX Research', xp: 30, description: 'User research and testing.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 60, Advanced: 180, Expert: 350 },
+        createdAt: new Date(),
+      },
+      {
+        _id: 'skill-figma',
+        name: 'Figma',
+        category: 'Design',
+        description: 'Design tool for creating user interfaces.',
+        icon: 'fa-palette',
+        color: '#f24e1e',
+        topics: [
+          { _id: 'figma-basics', name: 'Figma Basics', xp: 20, description: 'Frames, shapes, and text.' },
+          { _id: 'figma-components', name: 'Components', xp: 30, description: 'Reusable UI components.' },
         ],
         levelThresholds: { Beginner: 0, Intermediate: 50, Advanced: 150, Expert: 300 },
         createdAt: new Date(),
       },
+      // CYBERSECURITY
       {
-        _id: 'skill-db',
-        name: 'Database',
-        category: 'Backend',
-        description: 'Database management and SQL.',
-        icon: 'fa-database',
-        color: '#00758f',
+        _id: 'skill-cyber',
+        name: 'Cybersecurity',
+        category: 'Cybersecurity',
+        description: 'Protecting systems from digital attacks.',
+        icon: 'fa-shield-halved',
+        color: '#0d5c75',
         topics: [
-          { _id: 'db-sql', name: 'SQL Basics', xp: 30, description: 'Introduction to SQL and relational databases.' },
+          { _id: 'cyber-basics', name: 'Cybersecurity Basics', xp: 25, description: 'Introduction to security concepts.' },
+          { _id: 'cyber-network', name: 'Network Security', xp: 35, description: 'Firewalls, VPNs, and encryption.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 70, Advanced: 200, Expert: 400 },
+        createdAt: new Date(),
+      },
+      // NETWORKING
+      {
+        _id: 'skill-networking',
+        name: 'Computer Networking',
+        category: 'Networking',
+        description: 'Fundamentals of how computers communicate.',
+        icon: 'fa-wifi',
+        color: '#009688',
+        topics: [
+          { _id: 'network-basics', name: 'Networking Basics', xp: 25, description: 'OSI model and protocols.' },
+          { _id: 'network-tcp', name: 'TCP/IP', xp: 35, description: 'Internet protocol suite.' },
         ],
         levelThresholds: { Beginner: 0, Intermediate: 60, Advanced: 180, Expert: 350 },
+        createdAt: new Date(),
+      },
+      // MOBILE DEVELOPMENT
+      {
+        _id: 'skill-flutter',
+        name: 'Flutter',
+        category: 'Mobile Development',
+        description: 'Build cross-platform mobile apps with Flutter.',
+        icon: 'fa-mobile-screen',
+        color: '#02569b',
+        topics: [
+          { _id: 'flutter-basics', name: 'Flutter Basics', xp: 25, description: 'Widgets and state.' },
+          { _id: 'flutter-layouts', name: 'Layouts', xp: 30, description: 'Building responsive UIs in Flutter.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 70, Advanced: 200, Expert: 400 },
+        createdAt: new Date(),
+      },
+      // DEVOPS & CLOUD
+      {
+        _id: 'skill-docker',
+        name: 'Docker',
+        category: 'DevOps & Cloud',
+        description: 'Containerization for applications.',
+        icon: 'fa-cube',
+        color: '#2496ed',
+        topics: [
+          { _id: 'docker-basics', name: 'Docker Basics', xp: 30, description: 'Images and containers.' },
+          { _id: 'docker-compose', name: 'Docker Compose', xp: 35, description: 'Multi-container apps.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 80, Advanced: 250, Expert: 500 },
+        createdAt: new Date(),
+      },
+      // GIT & VERSION CONTROL
+      {
+        _id: 'skill-git',
+        name: 'Git',
+        category: 'Version Control',
+        description: 'Distributed version control system.',
+        icon: 'fa-code-branch',
+        color: '#f1502f',
+        topics: [
+          { _id: 'git-basics', name: 'Git Basics', xp: 20, description: 'Add, commit, push, pull.' },
+          { _id: 'git-branches', name: 'Branching', xp: 30, description: 'Feature branches and merging.' },
+        ],
+        levelThresholds: { Beginner: 0, Intermediate: 50, Advanced: 150, Expert: 300 },
         createdAt: new Date(),
       },
     ];

@@ -21,8 +21,8 @@
                 </a>
                 <ul class="nav-links">
                     <li><a href="#features">Features</a></li>
-                    <li><a href="#" id="toggle-roadmap-btn">My Roadmap</a></li>
-                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#enrolled-roadmaps" id="toggle-roadmap-btn">My Roadmap</a></li>
+                    <li><a href="#skill-tracker">Skills</a></li>
                     <li id="user-nav-item">
                         <span id="user-name-nav"></span>
                     </li>
@@ -201,8 +201,13 @@
     <!-- Skill Progress Tracking Section -->
     <section id="skill-tracker" class="skill-tracker-section">
         <div class="container">
-            <h2 class="section-title">Your Skill Progress</h2>
-            <p class="section-subtitle">Track your learning journey and earn XP</p>
+            <h2 class="section-title">Skill Tracker</h2>
+            <p class="section-subtitle">Explore and track skills from various categories</p>
+            <div id="skill-filters" class="opportunity-filters" style="margin-bottom: 2rem;">
+                <select id="skill-category-filter" class="filter-select">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
             <div id="skills-grid" class="skills-grid"></div>
         </div>
     </section>
